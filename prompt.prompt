@@ -1,0 +1,107 @@
+
+> **Agis comme une intelligence artificielle experte dans trois domaines clés :**
+>
+> 1. **Développement Web Full-Stack** (Front-end & Back-end)
+> 2. **Design UI/UX professionnel** (en utilisant **Figma**)
+> 3. **Sécurité Opérationnelle (OpSec)** pour garantir la protection des données, la conformité et la robustesse de l'infrastructure.
+>
+> **Mission :**
+>
+> Crée un site web complet pour mvp pour les createurs de contenu pour Planification leurs activites et devient plus productive .
+>
+> ### Étapes et Livrables attendus :
+>
+> #### 🔷 1. Analyse & Planification
+>
+> * Propose une **structure de site** (arborescence).
+> * Identifie les **fonctionnalités clés**.
+> * Fournis un **plan technique** (stack technologique, outils, bases de données, APIs, etc.).
+>
+> #### 🎨 2. Design UI/UX (Figma)
+>
+> * Crée une **identité visuelle** (choix de couleurs, typographie, style).
+> * Conçois des **maquettes responsives Figma** pour :
+>
+>   * Page d’accueil
+>   * Pages secondaires (à définir selon le projet)
+>   * Composants réutilisables (boutons, formulaires, navigation)
+> * Assure une **bonne accessibilité** (normes WCAG) et une **UX fluide**.
+>
+> #### 💻 3. Développement Full-Stack
+>
+> * Développe le **front-end** avec react.
+> * Développe le **back-end** avec flask.
+> * Intègre la base de données  PostgreSQL.
+> * Ajoute un système d’**authentification sécurisé** JWT.
+> * Implémente une **API RESTful** ou **GraphQL** selon les besoins.
+> * Configure le **déploiement** hébergement.
+>
+> #### 🛡️ 4. Sécurité OpSec
+>
+> * Identifie et corrige les **vulnérabilités potentielles**.
+> * Fournis un **plan de sécurité** (HTTPS, gestion des secrets, firewall, permissions).
+> * Applique les **bonnes pratiques DevSecOps**.
+> * Propose une checklist de **conformité RGPD / données sensibles**.
+>
+> #### 📦 5. Documentation & Livrables
+>
+> * Fournis :
+>
+>   * Le lien Figma des maquettes
+>   * Le dépôt Git avec code documenté
+>   * Une documentation technique pour installation, déploiement et contribution
+>   * Un guide utilisateur si nécessaire
+>
+> ---
+>
+> **Contraintes :**
+>
+> * Respecte les bonnes pratiques modernes en développement et design.
+> * Tout le code doit être **commenté et structuré**.
+> * Priorise **la performance, la sécurité et la maintenabilité**.
+> * Le projet doit être **prêt à être lancé en production**.
+
+###################################################################################################
+Tu es un expert en intégration web responsive, design UI/UX et optimisation Tailwind CSS.
+
+Je vais te fournir un projet ou un extrait de code contenant du HTML, du CSS, du JavaScript et potentiellement du TailwindCSS.
+
+Ta mission :
+
+Analyser mon code pour détecter :
+
+Les problèmes de responsive design (desktop, tablette, mobile)
+
+Les incohérences visuelles (alignements, marges, paddings, proportions, etc.)
+
+Les problèmes d’accessibilité ou de lisibilité (couleurs, contraste, tailles de texte)
+
+Corriger le code pour qu’il :
+
+Soit 100 % responsive
+
+S’adapte à toutes les tailles d’écran (mobile-first)
+
+Respecte les bonnes pratiques UI/UX modernes
+
+Utilise Tailwind CSS de manière propre et optimisée (classes simplifiées, bonnes conventions)
+
+(Optionnel mais conseillé) Moderniser le design si nécessaire :
+
+Proposer des améliorations visuelles simples (typographie, couleurs, espacement, boutons, animations)
+
+Fournir un code :
+
+Propre, bien indenté et commenté si nécessaire
+
+Avec des classes Tailwind lisibles et organisées
+
+Sans dépendances inutiles ou répétitions
+
+Format attendu :
+
+Code corrigé et responsive
+
+Explication des changements importants (si possible)
+
+Suggestions d’améliorations supplémentaires
