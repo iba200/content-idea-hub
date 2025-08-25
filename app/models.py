@@ -40,6 +40,7 @@ class Idea(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     tags = db.Column(db.String(200))  # e.g., "video,funny,tech"
+    status = db.Column(db.String(20), default='Draft')  # Draft, To Film, Published
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 

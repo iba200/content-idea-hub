@@ -10,6 +10,7 @@
     <div class="mb-3">{{ form.title.label }} {{ form.title(class="form-control") }}</div>
     <div class="mb-3">{{ form.description.label }} {{ form.description(class="form-control", rows=5) }}</div>
     <div class="mb-3">{{ form.tags.label }} {{ form.tags(class="form-control") }}</div>
+    <div class="mb-3">{{ form.status.label }} {{ form.status(class="form-control") }}</div>
     <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
     <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Cancel</a>
 </form>

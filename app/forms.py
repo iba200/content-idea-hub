@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length
 
 class RegisterForm(FlaskForm):
@@ -17,6 +17,7 @@ class IdeaForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(min=1, max=100)])
     description = TextAreaField('Description', validators=[Length(max=500)])
     tags = StringField('Tags (comma-separated)', validators=[Length(max=200)])
+    status = SelectField('Status', choices=[('Draft', 'Draft'), ('To Film', 'To Film'), ('Published', 'Published')], default='Draft')
     submit = SubmitField('Save')
 
     def validate_tags(self, tags):

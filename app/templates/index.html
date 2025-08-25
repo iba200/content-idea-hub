@@ -13,6 +13,7 @@
         <tr>
             <th>Title</th>
             <th>Tags</th>
+            <th>Status</th>
             <th>Date</th>
             <th>Actions</th>
         </tr>
@@ -21,16 +22,14 @@
         {% for idea in ideas %}
         <tr>
             <td>{{ idea.title }}</td>
-            <td>
-                {% for tag in idea.tags.split(',') %}
-                    <span class="badge bg-secondary">{{ tag }}</span>
-                {% endfor %}
-            </td>
+            <td>{% for tag in idea.tags.split(',') %}<span class="badge bg-secondary">{{ tag }}</span>{% endfor %}</td>
+            <td>{{ idea.status }}</td>
             <td>{{ idea.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
             <td>
                 <a href="{{ url_for('main.edit_idea', id=idea.id) }}" class="btn btn-primary btn-sm">Edit</a>
                 <form method="POST" action="{{ url_for('main.delete_idea', id=idea.id) }}" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Are you sure?');">Delete</button>
                 </form>
             </td>
         </tr>

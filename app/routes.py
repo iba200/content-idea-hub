@@ -72,6 +72,7 @@ def new_idea():
     form = IdeaForm()
     if form.validate_on_submit():
         idea = Idea(title=form.title.data, description=form.description.data, tags=form.tags.data, author=current_user)
+        idea.status = form.status.data
         db.session.add(idea)
         db.session.commit()
         flash('Idea added!', 'success')
@@ -90,6 +91,7 @@ def edit_idea(id):
         idea.title = form.title.data
         idea.description = form.description.data
         idea.tags = form.tags.data
+        idea.status = form.status.data
         db.session.commit()
         flash('Idea updated!', 'success')
         return redirect(url_for('main.index'))
