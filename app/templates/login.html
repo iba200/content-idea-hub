@@ -2,19 +2,33 @@
 {% block title %}Login{% endblock %}
 {% block content %}
 
-<h2 class="text-2xl font-bold mb-6">Login</h2>
+<h2 class="text-2xl font-bold text-gray-900 mb-6">Login</h2>
+
 <form method="POST" class="space-y-4">
     {{ form.hidden_tag() }}
-    <div class="mb-3">
-        {{ form.username.label(class="block text-sm font-medium text-gray-700") }}
-        {{ form.username(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500") }}
+
+    <!-- Username -->
+    <div>
+        {{ form.username.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+        {{ form.username(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none
+        focus:ring-1 focus:ring-gray-500") }}
     </div>
-    <div class="mb-3">
-        {{ form.password.label(class="block text-sm font-medium text-gray-700") }}
-        {{ form.password(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500") }}
+
+    <!-- Password -->
+    <div>
+        {{ form.password.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+        {{ form.password(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none
+        focus:ring-1 focus:ring-gray-500") }}
     </div>
+
+    <!-- Submit -->
     <button type="submit"
-        class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Login</button>
+        class="w-full py-2 px-4 border border-gray-400 rounded-md text-sm text-gray-800 hover:bg-gray-200">
+        Login
+    </button>
+    <!-- Register Link with mini space -->
+    <p class="text-sm text-gray-600 mt-2">Don't have an account? <a href="{{ url_for('main.register') }}"
+            class="text-blue-600 hover:underline">Register here</a>.</p>
 </form>
 
 {% endblock %}
