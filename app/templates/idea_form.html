@@ -1,55 +1,57 @@
 {% extends 'base.html' %}
 
-{% block title%}{% if idea %}Edit Idea{% else %}New Idea{% endif %}{% endblock %}
+{% block title %}
+    {% if idea %}Edit Idea{% else %}New Idea{% endif %}
+{% endblock %}
 
 {% block content %}
 
-<h2 class="text-2xl font-bold text-gray-900 mb-6">
-    {% if idea %}Edit{% else %}Add{% endif %} Idea
-</h2>
+<div class="flex items-center justify-center">
+    <div class="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            {% if idea %}Edit{% else %}Add{% endif %} Idea
+        </h2>
 
-<form method="POST" class="space-y-4">
-    {{ form.hidden_tag() }}
+        <form method="POST" class="space-y-6">
+            {{ form.hidden_tag() }}
 
-    <!-- Title -->
-    <div>
-        {{ form.title.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-        {{ form.title(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1
-        focus:ring-gray-500") }}
+            <!-- Title -->
+            <div>
+                {{ form.title.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.title(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+            </div>
+
+            <!-- Description -->
+            <div>
+                {{ form.description.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.description(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500", rows=5) }}
+            </div>
+
+            <!-- Tags -->
+            <div>
+                {{ form.tags.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.tags(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+            </div>
+
+            <!-- Status -->
+            <div>
+                {{ form.status.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.status(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                <button type="submit"
+                    class="w-full sm:w-auto px-4 py-2 bg-gray-800 text-white rounded-md text-sm font-medium hover:bg-gray-900 transition">
+                    {% if idea %}Update{% else %}Save{% endif %}
+                </button>
+                <a href="{{ url_for('main.index') }}"
+                    class="w-full sm:w-auto px-4 py-2 border border-gray-400 rounded-md text-sm text-gray-800 hover:bg-gray-200 text-center transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
-
-    <!-- Description -->
-    <div>
-        {{ form.description.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-        {{ form.description(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none
-        focus:ring-1 focus:ring-gray-500", rows=5) }}
-    </div>
-
-    <!-- Tags -->
-    <div>
-        {{ form.tags.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-        {{ form.tags(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1
-        focus:ring-gray-500") }}
-    </div>
-
-    <!-- Status -->
-    <div>
-        {{ form.status.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-        {{ form.status(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1
-        focus:ring-gray-500") }}
-    </div>
-
-    <!-- Actions -->
-    <div class="flex space-x-2 pt-4">
-        <button type="submit"
-            class="px-4 py-2 border border-gray-400 rounded-md text-sm text-gray-800 hover:bg-gray-200">
-            {{ form.submit.label }}
-        </button>
-        <a href="{{ url_for('main.index') }}"
-            class="px-4 py-2 border border-gray-400 rounded-md text-sm text-gray-800 hover:bg-gray-200">
-            Cancel
-        </a>
-    </div>
-</form>
+</div>
 
 {% endblock %}
