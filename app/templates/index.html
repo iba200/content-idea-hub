@@ -22,7 +22,11 @@
         {% for idea in ideas %}
         <tr>
             <td>{{ idea.title }}</td>
-            <td>{% for tag in idea.tags.split(',') %}<span class="badge bg-secondary">{{ tag }}</span>{% endfor %}</td>
+            <td>
+                {% for tag in idea.tags.split(',') %}
+                <span class="badge bg-secondary me-1">{{ tag }}</span>
+                {% endfor %}
+            </td>
             <td>{{ idea.status }}</td>
             <td>{{ idea.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
             <td>
