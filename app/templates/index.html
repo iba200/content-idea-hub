@@ -1,44 +1,46 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h2>Your Ideas</h2>
-<form method="POST" class="mb-3">
+<h2 class="text-2xl font-bold text-gray-800 mb-4">Your Ideas</h2>
+<form method="POST" class="mb-6">
     {{ form.hidden_tag() }}
-    {{ form.tags(class="form-control d-inline w-50", placeholder="e.g., video,funny") }}
-    {{ form.submit(class="btn btn-primary") }}
+    <div class="flex space-x-2">
+        {{ form.tags(class="form-control rounded-lg border-gray-300 focus:border-soft-blue focus:ring-soft-blue w-full",
+        placeholder="e.g., video,funny") }}
+        {{ form.submit(class="bg-soft-blue text-white px-4 py-2 rounded-lg hover:bg-blue-700") }}
+    </div>
 </form>
-<a href="{{ url_for('main.export_ideas') }}" class="btn btn-info mb-3">Export to CSV</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Tags</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for idea in ideas %}
-        <tr>
-            <td>{{ idea.title }}</td>
-            <td>
-                {% for tag in idea.tags.split(',') %}
-                <span class="badge bg-secondary me-1">{{ tag }}</span>
-                {% endfor %}
-            </td>
-            <td>{{ idea.status }}</td>
-            <td>{{ idea.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-            <td>
-                <a href="{{ url_for('main.edit_idea', id=idea.id) }}" class="btn btn-primary btn-sm">Edit</a>
-                <form method="POST" action="{{ url_for('main.delete_idea', id=idea.id) }}" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm"
-                        onclick="return confirm('Are you sure?');">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{{ pagination.links }}
+<div class="flex space-x-2 mb-6">
+    <a href="{{ url_for('main.import_ideas') }}"
+        class="bg-soft-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700">Import CSV</a>
+    <a href="{{ url_for('main.export_ideas') }}"
+        class="bg-soft-green text-white px-4 py-2 rounded-lg hover:bg-green-700">Export CSV</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for idea in ideas %}
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-bold text-gray-800">{{ idea.title }}</h3>
+        <p class="text-gray-600 mb-4">{{ idea.description | truncate(100) }}</p>
+        <div class="flex flex-wrap gap-2 mb-4">
+            {% for tag in idea.tags.split(',') %}
+            <span class="badge bg-soft-blue text-white px-2 py-1 rounded-full">{{ tag }}</span>
+            {% endfor %}
+        </div>
+        <div class="mb-4">
+            <span
+                class="badge {{ 'bg-soft-green' if idea.status == 'Published' else 'bg-yellow-400' if idea.status == 'To Film' else 'bg-gray-400' }} text-white px-2 py-1 rounded-full">{{
+                idea.status }}</span>
+        </div>
+        <p class="text-sm text-gray-500">{{ idea.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+        <div class="flex space-x-2 mt-4">
+            <a href="{{ url_for('main.edit_idea', id=idea.id) }}"
+                class="bg-soft-blue text-white px-3 py-1 rounded-lg hover:bg-blue-700">Edit</a>
+            <form method="POST" action="{{ url_for('main.delete_idea', id=idea.id) }}">
+                <button type="submit" class="bg-danger-red text-white px-3 py-1 rounded-lg hover:bg-red-700"
+                    onclick="return confirm('Are you sure?');">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

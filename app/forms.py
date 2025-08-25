@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, FileField
 from wtforms.validators import DataRequired, Length
 
 class RegisterForm(FlaskForm):
@@ -32,3 +32,6 @@ class SearchForm(FlaskForm):
 
 
 
+class ImportForm(FlaskForm):
+    file = FileField('CSV File', validators=[DataRequired()])
+    submit = SubmitField('Import')

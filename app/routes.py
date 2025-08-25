@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, Response
 from flask_login import login_user, logout_user, current_user, login_required
 from app import db, login_manager
 from app.models import User
-from app.forms import RegisterForm, LoginForm, SearchForm
+from app.forms import RegisterForm, LoginForm, SearchForm, ImportForm
 from app.models import Idea
 from app.forms import IdeaForm
 import csv
@@ -132,3 +132,28 @@ def export_ideas():
         mimetype='text/csv',
         headers={'Content-Disposition': 'attachment; filename=ideas.csv'}
     )
+
+from app.forms import ImportForm
+import csv
+from io import StringIO
+
+@bp.route('/ideas/import', methods=['GET', 'POST'])
+@login_required
+def import_ideas():
+    form = ImportForm()
+    if form.validate_on_submit():
+        file = form.file.data
+        reader = csv.DictReader(StringIO(file.read().decode('utf-8')))
+        for row in reader:
+            idea = Idea(
+                title=row['Title'],
+                description=row.get('Description', ''),
+                tags=row.get('Tags', ''),
+                status=row.get('Status', 'Draft'),
+                author=current_user
+            )
+            db.session.add(idea)
+        db.session.commit()
+        flash('Ideas imported successfully!', 'success')
+        return redirect(url_for('main.index'))
+    return render_template('import.html', form=form, title='Import Ideas')
