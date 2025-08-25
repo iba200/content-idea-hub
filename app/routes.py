@@ -7,6 +7,7 @@ from app.models import Idea
 from app.forms import IdeaForm
 import csv
 from io import StringIO
+from flask_paginate import Pagination, get_page_args
 
 bp = Blueprint('main', __name__)
 
@@ -46,6 +47,8 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
+from flask_paginate import Pagination, get_page_args
+
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
@@ -54,10 +57,13 @@ def index():
     if form.validate_on_submit() and form.tags.data:
         tags = [t.strip().lower() for t in form.tags.data.split(',') if t.strip()]
         for tag in tags:
-            ideas = ideas.filter(Idea.tags.contains(tag))  # Exact match dans comma-separated
-    ideas = ideas.order_by(Idea.timestamp.desc()).all()
-    return render_template('index.html', title='Dashboard', ideas=ideas, form=form)
-
+            ideas = ideas.filter(Idea.tags.contains(tag))
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    per_page = 10
+    total = ideas.count()
+    ideas = ideas.order_by(Idea.timestamp.desc()).offset(offset).limit(per_page).all()
+    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap5')
+    return render_template('index.html', title='Dashboard', ideas=ideas, form=form, pagination=pagination)
 """
         [route for create,update and remove ideas] 
 """
