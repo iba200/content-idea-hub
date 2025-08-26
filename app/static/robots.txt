@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://content-idea-hub.up.railway.app/sitemap.xml

@@ -1,8 +1,9 @@
 import csv
 from io import StringIO
+import os
 from flask import (
     Blueprint, Response, flash, redirect,
-    render_template, url_for, request, jsonify
+    render_template, url_for, request, jsonify, send_from_directory
 )
 from flask_login import current_user, login_required, login_user, logout_user
 from app import db
@@ -11,6 +12,7 @@ from app.models import Idea, User
 from flask_paginate import Pagination, get_page_args
 from google import genai
 import markdown
+
 
 bp = Blueprint('main', __name__)
 
@@ -292,3 +294,13 @@ def about():
 def faq():
     """Page FAQ"""
     return render_template('faq.html', title='FAQ')
+
+# ------------------ ROBOTS AND SITEMAP ------------------ #
+
+@bp.route('/robots.txt')
+def robots():
+    return send_from_directory('static', 'robots.txt')
+
+@bp.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory('static', 'sitemap.xml')
