@@ -1,35 +1,154 @@
 {% extends 'base.html' %}
-{% block title %}Import Ideas{% endblock %}
+{% block title %}Import Ideas - ContentIdeaHub{% endblock %}
+
 {% block content %}
 
-<div class="flex justify-center items-center min-h-[70vh] px-4">
-  <div class="w-full max-w-md bg-white p-6 rounded-xl shadow-md">
-    
-    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Import Ideas</h2>
-
-    <form method="POST" enctype="multipart/form-data" class="space-y-4">
-      {{ form.hidden_tag() }}
-
-      <!-- File Upload -->
-      <div>
-        {{ form.file.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-        {{ form.file(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none 
-                           focus:ring-2 focus:ring-blue-500") }}
-      </div>
-
-      <!-- Actions -->
-      <div class="flex flex-col sm:flex-row sm:justify-between gap-3 pt-4">
-        {{ form.submit(class="w-full sm:w-auto px-4 py-2 border border-gray-400 rounded-md text-sm 
-                          text-gray-800 bg-gray-100 hover:bg-gray-200 transition") }}
-
-        <a href="{{ url_for('main.index') }}"
-           class="w-full sm:w-auto px-4 py-2 border border-gray-400 rounded-md text-sm 
-                  text-gray-800 text-center bg-gray-50 hover:bg-gray-200 transition">
-          Cancel
+<!-- Header -->
+<div class="mb-8">
+    <div class="flex items-center space-x-4 mb-4">
+        <a href="{{ url_for('main.index') }}" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+            <i class="fas fa-arrow-left text-sm text-wire-text"></i>
         </a>
-      </div>
-    </form>
-  </div>
+        <h1 class="text-2xl font-bold text-wire-text">Import Ideas</h1>
+    </div>
+    <p class="text-gray-500 ml-12">Upload a CSV file to import multiple content ideas at once</p>
 </div>
+
+<div class="max-w-2xl mx-auto">
+    <!-- Import Form -->
+    <div class="bg-white border-2 border-wire-border rounded-lg p-8 mb-6">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {{ form.hidden_tag() }}
+
+            <!-- File Upload Area -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-wire-accent transition-colors group">
+                <div class="space-y-4">
+                    <div class="w-16 h-16 mx-auto border-2 border-gray-300 rounded-lg flex items-center justify-center group-hover:border-wire-accent transition-colors">
+                        <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 group-hover:text-wire-accent transition-colors"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-wire-text mb-2">Upload CSV File</h3>
+                        <p class="text-gray-500 mb-4">Drag and drop your file here or click to browse</p>
+                    </div>
+                    <div class="relative w-full h-12 flex items-center justify-center">
+                        {{ form.file(class="absolute inset-0 w-full h-full opacity-0 cursor-pointer", onchange="updateFileName(this)") }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Info Display -->
+            <div id="file-info" class="hidden bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                        <i class="fas fa-file-csv text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-blue-800" id="file-name">No file selected</p>
+                        <p class="text-sm text-blue-600" id="file-size"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button type="submit" class="flex-1 px-6 py-3 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-upload text-sm"></i>
+                    <span>Import Ideas</span>
+                </button>
+                <a href="{{ url_for('main.index') }}" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-times text-sm"></i>
+                    <span>Cancel</span>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- CSV Format Guide -->
+    <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-6">
+        <h3 class="text-lg font-medium text-wire-text mb-4 flex items-center space-x-2">
+            <i class="fas fa-info-circle text-wire-accent"></i>
+            <span>CSV Format Requirements</span>
+        </h3>
+        
+        <div class="space-y-4">
+            <!-- Required Headers -->
+            <div>
+                <h4 class="font-medium text-wire-text mb-2">Required Headers:</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+                    <div class="bg-white border border-gray-300 rounded px-3 py-2 font-mono">Title</div>
+                    <div class="bg-white border border-gray-300 rounded px-3 py-2 font-mono">Description</div>
+                    <div class="bg-white border border-gray-300 rounded px-3 py-2 font-mono">Tags</div>
+                    <div class="bg-white border border-gray-300 rounded px-3 py-2 font-mono">Status</div>
+                </div>
+            </div>
+
+            <!-- Example -->
+            <div>
+                <h4 class="font-medium text-wire-text mb-2">Example CSV Content:</h4>
+                <div class="bg-white border-2 border-gray-300 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                    <div class="whitespace-nowrap">
+                        <div class="text-gray-600">Title,Description,Tags,Status</div>
+                        <div>"Video Tutorial","How to create engaging content","video,tutorial,education",Draft</div>
+                        <div>"Social Media Post","Funny meme about productivity","meme,social,funny",To Film</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Values -->
+            <div>
+                <h4 class="font-medium text-wire-text mb-2">Valid Status Values:</h4>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-yellow-100 border border-yellow-300 rounded-full text-sm">Draft</span>
+                    <span class="px-3 py-1 bg-blue-100 border border-blue-300 rounded-full text-sm">To Film</span>
+                    <span class="px-3 py-1 bg-green-100 border border-green-300 rounded-full text-sm">Published</span>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                <h4 class="font-medium text-blue-800 mb-2">💡 Tips:</h4>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li class="flex items-start space-x-2">
+                        <span class="w-1 h-1 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
+                        <span>Use commas to separate multiple tags (e.g., "video,tutorial,beginner")</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <span class="w-1 h-1 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
+                        <span>Wrap text containing commas in quotes</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <span class="w-1 h-1 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
+                        <span>Empty fields are allowed (except Title)</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sample Download -->
+    <div class="mt-6 text-center">
+        <a href="#" class="inline-flex items-center space-x-2 text-wire-accent hover:underline">
+            <i class="fas fa-download text-sm"></i>
+            <span>Download Sample CSV Template</span>
+        </a>
+    </div>
+</div>
+
+<script>
+function updateFileName(input) {
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        fileName.textContent = file.name;
+        fileSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+        fileInfo.classList.remove('hidden');
+    } else {
+        fileInfo.classList.add('hidden');
+    }
+}
+</script>
 
 {% endblock %}

@@ -1,66 +1,154 @@
 {% extends 'base.html' %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard - ContentIdeaHub{% endblock %}
 {% block content %}
 
-<h2 class="text-2xl font-bold text-gray-900 mb-6">Your Ideas</h2>
-
-<!-- Tag Filter -->
-<form method="POST" class="mb-6">
-    {{ form.hidden_tag() }}
-    <div class="flex flex-col sm:flex-row sm:space-x-2 gap-2">
-        {{ form.tags(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500",
-        placeholder="e.g., video, funny") }}
-        {{ form.submit(class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 text-sm") }}
+<!-- Header Section -->
+<div class="mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        <div>
+            <h1 class="text-2xl font-bold text-wire-text mb-2">Content Ideas</h1>
+            <p class="text-gray-500">Manage and organize your creative content ideas</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ url_for('main.new_idea') }}" class="px-4 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2">
+                <i class="fas fa-plus text-sm"></i>
+                <span>New Idea</span>
+            </a>
+        </div>
     </div>
-</form>
+</div>
 
-<!-- Import / Export Buttons -->
-<div class="flex flex-col sm:flex-row sm:space-x-2 gap-2 mb-6">
-    <a href="{{ url_for('main.import_ideas') }}"
-        class="px-4 py-2 border border-gray-400 rounded-md text-sm text-gray-800 hover:bg-gray-200 text-center">Import CSV</a>
-    <a href="{{ url_for('main.export_ideas') }}"
-        class="px-4 py-2 border border-gray-400 rounded-md text-sm text-gray-800 hover:bg-gray-200 text-center">Export CSV</a>
+<!-- Filter Section -->
+<div class="bg-white border-2 border-wire-border rounded-lg p-6 mb-6">
+    <form method="POST" class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
+        {{ form.hidden_tag() }}
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-wire-text mb-2">Filter by Tags</label>
+            <div class="relative">
+                {{ form.tags(class="w-full px-4 py-2 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent", 
+                    placeholder="Enter tags (e.g., video, tutorial, social-media)") }}
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <i class="fas fa-search text-gray-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-end">
+            {{ form.submit(class="px-6 py-2 border-2 border-wire-accent text-wire-accent rounded-lg hover:bg-wire-accent hover:text-white transition-colors") }}
+        </div>
+    </form>
+</div>
+
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mb-6">
+    <a href="{{ url_for('main.import_ideas') }}" class="px-4 py-2 border-2 border-green-300 text-green-600 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-2 justify-center sm:justify-start">
+        <i class="fas fa-upload text-sm"></i>
+        <span>Import Ideas</span>
+    </a>
+    <a href="{{ url_for('main.export_ideas') }}" class="px-4 py-2 border-2 border-orange-300 text-orange-600 rounded-lg hover:bg-orange-50 transition-colors flex items-center space-x-2 justify-center sm:justify-start">
+        <i class="fas fa-download text-sm"></i>
+        <span>Export Ideas</span>
+    </a>
+    <a href="{{ url_for('main.suggest_idea')}}" class="px-4 py-2 border-2 border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors flex items-center space-x-2 justify-center sm:justify-start">
+        <i class="fas fa-magic text-sm"></i>
+        <span>AI Suggest</span>
+    </a>
 </div>
 
 <!-- Ideas Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="space-y-4">
     {% for idea in ideas %}
-    <div class="bg-white border border-gray-300 p-6 rounded-lg shadow-sm hover:shadow-md transition">
-        <!-- Title -->
-        <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ idea.title }}</h3>
-        <p class="text-gray-600 text-sm mb-4">{{ idea.description | truncate(100) }}</p>
-
-        <!-- Tags -->
-        <div class="flex flex-wrap gap-2 mb-3">
-            {% for tag in idea.tags.split(',') %}
-            <span class="px-2 py-1 border border-gray-300 text-xs rounded-full text-gray-700 bg-gray-50">
-                {{ tag }}
-            </span>
-            {% endfor %}
+    <div class="bg-white border-2 border-wire-border rounded-lg p-6 hover:border-wire-accent transition-colors">
+        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0">
+            <!-- Content -->
+            <div class="flex-1 lg:pr-6">
+                <div class="flex items-center space-x-3 mb-3">
+                    <h3 class="text-lg font-bold text-wire-text">{{ idea.title }}</h3>
+                    <div class="px-3 py-1 border-2 border-gray-300 rounded-full text-xs font-medium text-gray-600">
+                        {{ idea.status }}
+                    </div>
+                </div>
+                
+                {% if idea.description %}
+                <p class="text-gray-600 mb-4 leading-relaxed">{{ idea.description | truncate(200) }}</p>
+                {% endif %}
+                
+                <!-- Tags -->
+                {% if idea.tags %}
+                <div class="flex flex-wrap gap-2 mb-3">
+                    {% for tag in idea.tags.split(',') if tag.strip() %}
+                    <span class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs text-gray-700">
+                        #{{ tag.strip() }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Timestamp -->
+                <p class="text-xs text-gray-400">{{ idea.timestamp.strftime('%B %d, %Y at %H:%M') }}</p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex flex-row lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2">
+                <a href="{{ url_for('main.edit_idea', id=idea.id) }}" class="flex items-center justify-center w-8 h-8 border-2 border-blue-300 text-blue-600 rounded hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-edit text-xs"></i>
+                </a>
+                <form method="POST" action="{{ url_for('main.delete_idea', id=idea.id) }}" class="inline">
+                    <button type="submit" onclick="return confirm('Delete this idea?')" class="flex items-center justify-center w-8 h-8 border-2 border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('main.duplicate_idea', id=idea.id) }}" class="inline">
+                    <button type="submit" class="flex items-center justify-center w-8 h-8 border-2 border-gray-300 text-gray-600 rounded hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-copy text-xs"></i>
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <!-- Status -->
-        <div class="mb-3">
-            <span class="px-2 py-1 border text-xs rounded-md text-gray-700 bg-gray-50">
-                {{ idea.status }}
-            </span>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="bg-white border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 border-2 border-gray-300 rounded-lg flex items-center justify-center">
+            <i class="fas fa-lightbulb text-2xl text-gray-400"></i>
         </div>
-
-        <!-- Timestamp -->
-        <p class="text-xs text-gray-500">{{ idea.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
-
-        <!-- Actions -->
-        <div class="flex flex-wrap gap-2 mt-4">
-            <a href="{{ url_for('main.edit_idea', id=idea.id) }}"
-                class="px-3 py-1 border border-gray-400 text-xs rounded-md text-gray-800 hover:bg-gray-200">Edit</a>
-            <form method="POST" action="{{ url_for('main.delete_idea', id=idea.id) }}">
-                <button type="submit"
-                    class="px-3 py-1 border border-gray-400 text-xs rounded-md text-gray-800 hover:bg-gray-200"
-                    onclick="return confirm('Are you sure?');">Delete</button>
-            </form>
-        </div>
+        <h3 class="text-lg font-medium text-gray-500 mb-2">No ideas yet</h3>
+        <p class="text-gray-400 mb-6">Get started by creating your first content idea</p>
+        <a href="{{ url_for('main.new_idea') }}" class="px-6 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors">
+            Create First Idea
+        </a>
     </div>
     {% endfor %}
 </div>
+
+<!-- Pagination -->
+{% if pagination.pages|int > 1 %}
+<div class="mt-8 flex justify-center">
+    <nav class="flex items-center space-x-2">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('main.index', page=pagination.prev_num) }}" class="px-3 py-2 border-2 border-wire-border rounded hover:border-wire-accent transition-colors">
+            <i class="fas fa-chevron-left text-xs"></i>
+        </a>
+        {% endif %}
+        
+        {% for page_num in pagination.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != pagination.page %}
+                <a href="{{ url_for('main.index', page=page_num) }}" class="px-3 py-2 border-2 border-wire-border rounded hover:border-wire-accent transition-colors">{{ page_num }}</a>
+                {% else %}
+                <span class="px-3 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded">{{ page_num }}</span>
+                {% endif %}
+            {% else %}
+            <span class="px-3 py-2 text-gray-400">…</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if pagination.has_next %}
+        <a href="{{ url_for('main.index', page=pagination.next_num) }}" class="px-3 py-2 border-2 border-wire-border rounded hover:border-wire-accent transition-colors">
+            <i class="fas fa-chevron-right text-xs"></i>
+        </a>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}
 
 {% endblock %}

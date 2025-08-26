@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}AI Suggest Ideas - ContentIdeaHub{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="mb-8">
+    <div class="flex items-center space-x-4 mb-4">
+        <a href="{{ url_for('main.index') }}" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+            <i class="fas fa-arrow-left text-sm text-wire-text"></i>
+        </a>
+        <h1 class="text-2xl font-bold text-wire-text">AI Suggest Ideas</h1>
+    </div>
+    <p class="text-gray-500 ml-12">Get creative content suggestions based on your tags and interests</p>
+</div>
+
+<div class="max-w-4xl mx-auto">
+    <!-- Input Form -->
+    <div class="bg-white border-2 border-wire-border rounded-lg p-8 mb-8">
+        <form method="POST" class="space-y-6">
+            {{ form.hidden_tag() }}
+
+            <!-- AI Icon -->
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg border-2 border-purple-500 flex items-center justify-center mb-4">
+                    <i class="fas fa-magic text-2xl text-white"></i>
+                </div>
+                <h2 class="text-lg font-semibold text-wire-text mb-2">AI Content Ideation</h2>
+                <p class="text-gray-500 text-sm">Enter topics or tags to generate creative content ideas</p>
+            </div>
+
+            <!-- Tags Input -->
+            <div>
+                <label class="block text-sm font-medium text-wire-text mb-2">
+                    {{ form.tags.label.text }}
+                    <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    {{ form.tags(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-purple-500 transition-colors", 
+                        placeholder="e.g., fitness, cooking, technology, travel, productivity") }}
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-tags text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Separate multiple topics with commas</p>
+                {% if form.tags.errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in form.tags.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Examples Section -->
+            <div class="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                <h4 class="font-medium text-purple-800 mb-3 flex items-center space-x-2">
+                    <i class="fas fa-lightbulb text-purple-600"></i>
+                    <span>Example Topics</span>
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+                    <button type="button" onclick="addTag('fitness, workout, health')" class="text-left px-3 py-2 bg-white border border-purple-300 rounded hover:bg-purple-100 transition-colors">
+                        🏋️ Fitness & Health
+                    </button>
+                    <button type="button" onclick="addTag('cooking, recipes, food')" class="text-left px-3 py-2 bg-white border border-purple-300 rounded hover:bg-purple-100 transition-colors">
+                        🍳 Cooking & Food
+                    </button>
+                    <button type="button" onclick="addTag('technology, gadgets, AI')" class="text-left px-3 py-2 bg-white border border-purple-300 rounded hover:bg-purple-100 transition-colors">
+                        💻 Technology
+                    </button>
+                    <button type="button" onclick="addTag('travel, adventure, culture')" class="text-left px-3 py-2 bg-white border border-purple-300 rounded hover:bg-purple-100 transition-colors">
+                        ✈️ Travel & Adventure
+                    </button>
+                    <button type="button" onclick="addTag('productivity, business, tips')" class="text-left px-3 py-2 bg-white border border-purple-300 rounded hover:bg-purple-100 transition-colors">
+                        📈 Productivity
+                    </button>
+                    <button type="button" onclick="addTag('lifestyle, fashion, beauty')" class="text-left px-3 py-2 bg-white border border-purple-300 rounded hover:bg-purple-100 transition-colors">
+                        💄 Lifestyle & Beauty
+                    </button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-2 border-purple-500 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-magic text-sm"></i>
+                    <span>Generate Ideas</span>
+                </button>
+                <a href="{{ url_for('main.index') }}" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-times text-sm"></i>
+                    <span>Cancel</span>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white border-2 border-wire-border rounded-lg p-6">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg border-2 border-blue-300 flex items-center justify-center mb-4">
+                <i class="fas fa-bullseye text-blue-600"></i>
+            </div>
+            <h3 class="font-semibold text-wire-text mb-2">Be Specific</h3>
+            <p class="text-sm text-gray-600">Use specific topics and niches to get more targeted suggestions</p>
+        </div>
+        
+        <div class="bg-white border-2 border-wire-border rounded-lg p-6">
+            <div class="w-12 h-12 bg-green-100 rounded-lg border-2 border-green-300 flex items-center justify-center mb-4">
+                <i class="fas fa-palette text-green-600"></i>
+            </div>
+            <h3 class="font-semibold text-wire-text mb-2">Mix Topics</h3>
+            <p class="text-sm text-gray-600">Combine different interests for unique and creative ideas</p>
+        </div>
+        
+        <div class="bg-white border-2 border-wire-border rounded-lg p-6">
+            <div class="w-12 h-12 bg-orange-100 rounded-lg border-2 border-orange-300 flex items-center justify-center mb-4">
+                <i class="fas fa-trending-up text-orange-600"></i>
+            </div>
+            <h3 class="font-semibold text-wire-text mb-2">Stay Trendy</h3>
+            <p class="text-sm text-gray-600">Include trending topics or seasonal themes for better engagement</p>
+        </div>
+    </div>
+
+    <!-- Recent Suggestions (if available) -->
+    <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-6">
+        <h3 class="font-medium text-wire-text mb-4 flex items-center space-x-2">
+            <i class="fas fa-history text-gray-500"></i>
+            <span>How It Works</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+            <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                <div>
+                    <h4 class="font-medium text-wire-text">Enter Tags</h4>
+                    <p class="text-gray-600">Provide topics you're interested in</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                <div>
+                    <h4 class="font-medium text-wire-text">AI Analysis</h4>
+                    <p class="text-gray-600">Our AI analyzes trending patterns</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                <div>
+                    <h4 class="font-medium text-wire-text">Generate Ideas</h4>
+                    <p class="text-gray-600">Get creative suggestions tailored to you</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-3">
+                <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
+                <div>
+                    <h4 class="font-medium text-wire-text">Save & Create</h4>
+                    <p class="text-gray-600">Add ideas directly to your dashboard</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addTag(tags) {
+    const input = document.getElementById('{{ form.tags.id }}');
+    if (input.value.trim()) {
+        input.value += ', ' + tags;
+    } else {
+        input.value = tags;
+    }
+    input.focus();
+}
+</script>
+
+{% endblock %}

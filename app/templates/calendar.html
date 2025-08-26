@@ -1,32 +1,388 @@
 {% extends 'base.html' %}
-{% block title %}Editorial Calendar{% endblock %}
+{% block title %}Editorial Calendar - ContentIdeaHub{% endblock %}
+
 {% block content %}
-<h2 class="text-2xl font-bold mb-4">Editorial Calendar</h2>
-<div id="calendar" class="bg-pure-white p-6 rounded-lg shadow-md"></div>
+
+<!-- Header -->
+<div class="mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        <div>
+            <h1 class="text-2xl font-bold text-wire-text mb-2">Editorial Calendar</h1>
+            <p class="text-gray-500">Visualize your content ideas timeline and planning</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ url_for('main.new_idea') }}" class="px-4 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2">
+                <i class="fas fa-plus text-sm"></i>
+                <span>New Idea</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="bg-white border-2 border-wire-border rounded-lg p-4 mb-6">
+    <h3 class="font-medium text-wire-text mb-3 flex items-center space-x-2">
+        <i class="fas fa-palette text-wire-accent"></i>
+        <span>Status Legend</span>
+    </h3>
+    <div class="flex flex-wrap gap-4 text-sm">
+        <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-yellow-400 border-2 border-yellow-500 rounded"></div>
+            <span class="text-wire-text">Draft</span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-blue-400 border-2 border-blue-500 rounded"></div>
+            <span class="text-wire-text">To Film</span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-green-400 border-2 border-green-500 rounded"></div>
+            <span class="text-wire-text">Published</span>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Buttons -->
+<div class="mb-4 flex space-x-2">
+    <button onclick="filterEvents('all')" class="px-3 py-1 bg-gray-200 rounded">Tous</button>
+    <button onclick="filterEvents('Draft')" class="px-3 py-1 bg-yellow-400 text-white rounded">Draft</button>
+    <button onclick="filterEvents('To Film')" class="px-3 py-1 bg-blue-400 text-white rounded">To Film</button>
+    <button onclick="filterEvents('Published')" class="px-3 py-1 bg-green-400 text-white rounded">Published</button>
+</div>
+
+<!-- Calendar Container -->
+<div class="bg-white border-2 border-wire-border rounded-lg shadow-sm">
+    <!-- Calendar Header (Custom) -->
+    <div class="border-b-2 border-wire-border p-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button id="prev-btn" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+                    <i class="fas fa-chevron-left text-sm"></i>
+                </button>
+                <h2 id="calendar-title" class="text-lg font-bold text-wire-text"></h2>
+                <button id="next-btn" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+                    <i class="fas fa-chevron-right text-sm"></i>
+                </button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button id="today-btn" class="px-3 py-1 border-2 border-wire-accent text-wire-accent rounded hover:bg-wire-accent hover:text-white transition-colors text-sm">
+                    Today
+                </button>
+                <div class="flex border-2 border-wire-border rounded overflow-hidden">
+                    <button id="month-view" class="px-3 py-1 bg-wire-accent text-white text-sm">Month</button>
+                    <button id="week-view" class="px-3 py-1 hover:bg-gray-50 text-sm">Week</button>
+                    <button id="day-view" class="px-3 py-1 hover:bg-gray-50 text-sm">Day</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FullCalendar will render here -->
+    <div id="calendar" class="p-4 min-h-[600px]"></div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50"></div>
+
+<!-- Idea Detail Modal -->
+<div id="idea-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white border-2 border-wire-border rounded-lg max-w-md w-full p-6">
+        <div class="flex justify-between items-start mb-4">
+            <h3 id="modal-title" class="text-lg font-bold text-wire-text"></h3>
+            <button id="close-modal" class="w-6 h-6 border-2 border-gray-300 rounded flex items-center justify-center hover:border-red-400 hover:text-red-600 transition-colors">
+                <i class="fas fa-times text-xs"></i>
+            </button>
+        </div>
+        <div id="modal-content" class="space-y-3 text-sm"></div>
+        <div class="mt-6 flex space-x-3">
+            <button id="edit-idea-btn" class="flex-1 px-4 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors text-sm">
+                Edit Idea
+            </button>
+            <button id="close-modal-btn" class="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom FullCalendar styling */
+.fc {
+    font-family: inherit;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+    border-color: #e5e7eb;
+    border-width: 2px;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+    border-color: #e5e7eb;
+    border-width: 1px;
+}
+
+.fc-col-header-cell {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 8px;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+}
+
+.fc-daygrid-day {
+    min-height: 80px;
+}
+
+.fc-daygrid-day-number {
+    font-weight: 500;
+    padding: 4px 8px;
+}
+
+.fc-event {
+    border-width: 2px !important;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    margin: 1px;
+    cursor: pointer;
+}
+
+.fc-event:hover {
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.fc-toolbar-title {
+    display: none;
+}
+
+.fc-toolbar {
+    display: none;
+}
+</style>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof FullCalendar === 'undefined') {
+        console.error('FullCalendar library not loaded!');
+        return;
+    }
+
+    const calendarEl = document.getElementById('calendar');
+    let allEvents = [
+        {% for idea in ideas %}
+        {
+            id: {{ idea.id }},
+            title: {{ idea.title|tojson }},
+            start: '{{ idea.timestamp.strftime('%Y-%m-%d') }}',
+            extendedProps: {
+                status: {{ idea.status|tojson }},
+                tags: {{ (idea.tags or "")|tojson }},
+                description: {{ (idea.description or "")|truncate(100)|tojson }}
+            },
+            backgroundColor: '{% if idea.status == "Draft" %}#fbbf24{% elif idea.status == "To Film" %}#60a5fa{% else %}#34d399{% endif %}',
+            borderColor: '{% if idea.status == "Draft" %}#f59e0b{% elif idea.status == "To Film" %}#3b82f6{% else %}#10b981{% endif %}',
+            textColor: '#ffffff'
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    try {
+        const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events: [
-                {% for idea in ideas %}
-                {
-                    title: '{{ idea.title }}',
-                    start: '{{ idea.timestamp.strftime('%Y-%m-%d') }}',
-                    extendedProps: {
-                        status: '{{ idea.status }}',
-                        tags: '{{ idea.tags }}'
-                    },
-                    backgroundColor: '{{ '#FFFFFF' if idea.status == 'Published' else '#4B5563' if idea.status == 'To Film' else '#D1D5DB' }}',
-                    textColor: '{{ '#4B5563' if idea.status == 'Published' else '#FFFFFF' }}'
-                },
-                {% endfor %}
-            ],
+            headerToolbar: false,
+            height: 'auto',
+            firstDay: 1,
+            responsive: true,
+            aspectRatio: window.innerWidth < 768 ? 1.0 : 1.35,
+            editable: true,
+
+            events: allEvents,
+
             eventClick: function(info) {
-                alert('Idea: ' + info.event.title + '\nStatus: ' + info.event.extendedProps.status + '\nTags: ' + info.event.extendedProps.tags);
+                showIdeaModal(info.event);
+            },
+
+            datesSet: function(dateInfo) {
+                updateCalendarTitle(dateInfo.view.title);
+            },
+
+            eventDrop: function(info) {
+                fetch(`/idea/${info.event.id}/update-date`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        new_date: info.event.start.toISOString().split('T')[0]
+                    })
+                });
+                showToast(`Date updated for: ${info.event.title}`);
+            },
+
+            dateClick: function(info) {
+                showToast(`Creating idea on ${info.dateStr}`);
+                window.location.href = `/idea/new?date=${info.dateStr}`;
             }
         });
+
         calendar.render();
+
+        // Navigation buttons
+        document.getElementById('prev-btn').addEventListener('click', function() {
+            calendar.prev();
+        });
+
+        document.getElementById('next-btn').addEventListener('click', function() {
+            calendar.next();
+        });
+
+        document.getElementById('today-btn').addEventListener('click', function() {
+            calendar.today();
+        });
+
+        // View buttons
+        document.getElementById('month-view').addEventListener('click', function() {
+            calendar.changeView('dayGridMonth');
+            setActiveViewButton('month-view');
+        });
+
+        document.getElementById('week-view').addEventListener('click', function() {
+            calendar.changeView('timeGridWeek');
+            setActiveViewButton('week-view');
+        });
+
+        document.getElementById('day-view').addEventListener('click', function() {
+            calendar.changeView('timeGridDay');
+            setActiveViewButton('day-view');
+        });
+
+        // Filtrage des événements
+        window.filterEvents = function(status) {
+            if (status === 'all') {
+                calendar.removeAllEvents();
+                allEvents.forEach(e => calendar.addEvent(e));
+            } else {
+                calendar.removeAllEvents();
+                allEvents.filter(e => e.extendedProps.status === status).forEach(e => calendar.addEvent(e));
+            }
+            showToast(`Filter applied: ${status}`);
+        };
+
+    } catch (error) {
+        console.error('Calendar initialization error:', error);
+    }
+
+    // Toast function
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 3000);
+    }
+
+    // Modal functions
+    function showIdeaModal(event) {
+        const modal = document.getElementById('idea-modal');
+        const title = document.getElementById('modal-title');
+        const content = document.getElementById('modal-content');
+        const editBtn = document.getElementById('edit-idea-btn');
+
+        title.textContent = event.title;
+
+        content.innerHTML = `
+            <div class="space-y-3">
+                <div class="flex items-start space-x-3">
+                    <div class="w-4 h-4 mt-0.5 bg-${getStatusColor(event.extendedProps.status)} border-2 border-${getStatusBorderColor(event.extendedProps.status)} rounded"></div>
+                    <div>
+                        <p class="font-medium text-wire-text">Status</p>
+                        <p class="text-gray-600">${event.extendedProps.status}</p>
+                    </div>
+                </div>
+                ${event.extendedProps.description ? `
+                <div>
+                    <p class="font-medium text-wire-text mb-1">Description</p>
+                    <p class="text-gray-600">${event.extendedProps.description}</p>
+                </div>
+                ` : ''}
+                ${event.extendedProps.tags ? `
+                <div>
+                    <p class="font-medium text-wire-text mb-1">Tags</p>
+                    <div class="flex flex-wrap gap-1">
+                        ${event.extendedProps.tags.split(',').map(tag => 
+                            `<span class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">#${tag.trim()}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                <div>
+                    <p class="font-medium text-wire-text mb-1">Date</p>
+                    <p class="text-gray-600">${event.start.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })}</p>
+                </div>
+            </div>
+        `;
+
+        editBtn.onclick = function() {
+            window.location.href = `/idea/${event.id}/edit`;
+        };
+
+        modal.classList.remove('hidden');
+    }
+
+    function getStatusColor(status) {
+        switch(status) {
+            case 'Draft': return 'yellow-400';
+            case 'To Film': return 'blue-400';
+            case 'Published': return 'green-400';
+            default: return 'gray-400';
+        }
+    }
+
+    function getStatusBorderColor(status) {
+        switch(status) {
+            case 'Draft': return 'yellow-500';
+            case 'To Film': return 'blue-500';
+            case 'Published': return 'green-500';
+            default: return 'gray-500';
+        }
+    }
+
+    function setActiveViewButton(activeId) {
+        const buttons = ['month-view', 'week-view', 'day-view'];
+        buttons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (id === activeId) {
+                btn.className = 'px-3 py-1 bg-wire-accent text-white text-sm';
+            } else {
+                btn.className = 'px-3 py-1 hover:bg-gray-50 text-sm';
+            }
+        });
+    }
+
+    function updateCalendarTitle(title) {
+        document.getElementById('calendar-title').textContent = title;
+    }
+
+    // Close modal events
+    document.getElementById('close-modal').addEventListener('click', function() {
+        document.getElementById('idea-modal').classList.add('hidden');
     });
+
+    document.getElementById('close-modal-btn').addEventListener('click', function() {
+        document.getElementById('idea-modal').classList.add('hidden');
+    });
+
+    document.getElementById('idea-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+        }
+    });
+});
 </script>
+
 {% endblock %}

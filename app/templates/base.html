@@ -4,92 +4,167 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}{% endblock %}</title>
-    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet" />
+    <title>{% block title %}ContentIdeaHub{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/aee6406d64.js" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.js"></script>
+    <!-- FullCalendar CSS et JS - Version stable -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'wire-gray': '#f8f9fa',
+                        'wire-border': '#e5e7eb',
+                        'wire-text': '#374151',
+                        'wire-accent': '#3b82f6',
+                        'wire-hover': '#f3f4f6'
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'monospace'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
-<body class="bg-gray-100 font-sans text-gray-900">
+<body class="bg-wire-gray text-wire-text font-sans min-h-screen">
     <div class="flex min-h-screen">
-
+        
         <!-- Sidebar (Desktop) -->
-        <aside class="hidden md:flex w-64 flex-col bg-white border-r border-gray-300">
-            <div class="p-6 border-b border-gray-300">
-                <a href="{{ url_for('main.index') }}" class="text-xl font-bold">ContentIdeaHub</a>
+        <aside class="hidden lg:flex w-64 flex-col bg-white border-r-2 border-wire-border">
+            <!-- Logo -->
+            <div class="p-6 border-b-2 border-wire-border">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold text-wire-text">ContentHub</span>
+                </div>
             </div>
-            <nav class="flex-1 mt-4 space-y-1">
+            
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 space-y-2">
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('main.index') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                <a href="{{ url_for('main.index') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-th-large text-xs text-wire-text"></i>
+                    </div>
+                    Dashboard
                 </a>
-                <a href="{{ url_for('main.new_idea') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-plus mr-3"></i> Add Idea
+                <a href="{{ url_for('main.new_idea') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-plus text-xs text-wire-text"></i>
+                    </div>
+                    New Idea
                 </a>
-                <a href="{{ url_for('main.import_ideas') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-file-import mr-3"></i> Import CSV
+                <a href="{{ url_for('main.import_ideas') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-upload text-xs text-wire-text"></i>
+                    </div>
+                    Import
                 </a>
-                <a href="{{ url_for('main.export_ideas') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-file-export mr-3"></i> Export CSV
+                <a href="{{ url_for('main.export_ideas') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-download text-xs text-wire-text"></i>
+                    </div>
+                    Export
                 </a>
-                <a href="" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-calendar-alt mr-3"></i> Calendar
+                <a href="{{ url_for('main.calendar')}}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-calendar text-xs text-wire-text"></i>
+                    </div>
+                    Calendar
                 </a>
-                <a href="" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-lightbulb mr-3"></i> Suggest Ideas
+                <a href="{{ url_for('main.suggest_idea')}}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-magic text-xs text-wire-text"></i>
+                    </div>
+                    AI Suggest
                 </a>
-                <a href="{{ url_for('main.logout') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-sign-out-alt mr-3"></i> Logout
-                </a>
+                
+                <!-- User section -->
+                <div class="mt-8 pt-4 border-t-2 border-wire-border">
+                    <div class="flex items-center px-4 py-2 text-sm text-gray-500">
+                        <div class="w-6 h-6 border-2 border-wire-border rounded-full mr-3 flex items-center justify-center">
+                            <i class="fas fa-user text-xs"></i>
+                        </div>
+                        {{ current_user.username }}
+                    </div>
+                    <a href="{{ url_for('main.logout') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-red-200 hover:bg-red-50 rounded-lg transition-all duration-200 group">
+                        <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-red-300">
+                            <i class="fas fa-sign-out-alt text-xs text-wire-text"></i>
+                        </div>
+                        Logout
+                    </a>
+                </div>
                 {% else %}
-                <a href="{{ url_for('main.login') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-sign-in-alt mr-3"></i> Login
+                <a href="{{ url_for('main.login') }}" class="flex items-center px-4 py-3 text-sm border-2 border-wire-accent bg-wire-accent text-white rounded-lg hover:bg-blue-600 transition-all duration-200">
+                    <div class="w-6 h-6 border-2 border-white rounded mr-3 flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt text-xs text-white"></i>
+                    </div>
+                    Login
                 </a>
-                <a href="{{ url_for('main.register') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
-                    <i class="fas fa-user-plus mr-3"></i> Register
+                <a href="{{ url_for('main.register') }}" class="flex items-center px-4 py-3 text-sm border-2 border-wire-border hover:border-wire-accent hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-user-plus text-xs text-wire-text"></i>
+                    </div>
+                    Register
                 </a>
                 {% endif %}
             </nav>
         </aside>
 
-        <!-- Mobile Navbar -->
-        <div class="md:hidden w-full bg-white border-b border-gray-300 p-4 flex justify-between items-center sticky top-0 z-30">
-            <h2 class="text-lg font-bold">ContentIdeaHub</h2>
-            <button id="menu-toggle" class="text-gray-700 focus:outline-none">
-                <i class="fas fa-bars text-xl"></i>
+        <!-- Mobile Header -->
+        <div class="lg:hidden w-full bg-white border-b-2 border-wire-border p-4 flex justify-between items-center sticky top-0 z-30">
+            <div class="flex items-center space-x-3">
+                <div class="w-6 h-6 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
+                    <i class="fas fa-lightbulb text-white text-xs"></i>
+                </div>
+                <span class="text-lg font-bold text-wire-text">ContentHub</span>
+            </div>
+            <button id="menu-toggle" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+                <i class="fas fa-bars text-sm text-wire-text"></i>
             </button>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu"
-            class="hidden absolute top-16 left-0 right-0 bg-white border border-gray-300 rounded-md shadow-md z-20 p-4 md:hidden transition-all duration-300 ease-in-out">
+        <div id="mobile-menu" class="hidden absolute top-16 left-4 right-4 bg-white border-2 border-wire-border rounded-lg shadow-lg z-20 p-4 lg:hidden">
             {% if current_user.is_authenticated %}
-            <a href="{{ url_for('main.index') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Dashboard</a>
-            <a href="{{ url_for('main.new_idea') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Add Idea</a>
-            <a href="{{ url_for('main.import_ideas') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Import CSV</a>
-            <a href="{{ url_for('main.export_ideas') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Export CSV</a>
-            <a href="#" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Calendar</a>
-            <a href="#" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Suggest Ideas</a>
-            <a href="{{ url_for('main.logout') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Logout</a>
+            <a href="{{ url_for('main.index') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Dashboard</a>
+            <a href="{{ url_for('main.new_idea') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">New Idea</a>
+            <a href="{{ url_for('main.import_ideas') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Import</a>
+            <a href="{{ url_for('main.export_ideas') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Export</a>
+            <a href="{{ url_for('main.calendar')}}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Calendar</a>
+            <a href="{{ url_for('main.suggest_idea')}}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">AI Suggest</a>
+            <a href="{{ url_for('main.logout') }}" class="block py-3 px-4 text-sm hover:bg-red-50 text-red-600">Logout</a>
             {% else %}
-            <a href="{{ url_for('main.login') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Login</a>
-            <a href="{{ url_for('main.register') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Register</a>
+            <a href="{{ url_for('main.login') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Login</a>
+            <a href="{{ url_for('main.register') }}" class="block py-3 px-4 text-sm hover:bg-wire-hover">Register</a>
             {% endif %}
         </div>
 
         <!-- Main Content -->
-        <main class="flex-1 p-4 sm:p-6 md:p-8">
+        <main class="flex-1 p-4 lg:p-8 bg-wire-gray">
+            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-            {% for category, message in messages %}
-            <div class="flex items-center p-4 mb-4 border-l-4 rounded
-                {% if category == 'success' %} border-green-500 bg-green-50 text-green-800
-                {% else %} border-red-500 bg-red-50 text-red-800 {% endif %}">
-                <i class="fas {% if category == 'success' %} fa-check-circle {% else %} fa-exclamation-circle {% endif %} mr-2"></i>
-                {{ message }}
+            <div class="mb-6 space-y-2">
+                {% for category, message in messages %}
+                <div class="p-4 border-2 rounded-lg flex items-center space-x-3
+                    {% if category == 'success' %} border-green-300 bg-green-50 text-green-800
+                    {% elif category == 'danger' %} border-red-300 bg-red-50 text-red-800
+                    {% else %} border-blue-300 bg-blue-50 text-blue-800 {% endif %}">
+                    <div class="w-6 h-6 border-2 {% if category == 'success' %} border-green-400 {% elif category == 'danger' %} border-red-400 {% else %} border-blue-400 {% endif %} rounded-full flex items-center justify-center">
+                        <i class="fas {% if category == 'success' %} fa-check {% elif category == 'danger' %} fa-exclamation {% else %} fa-info {% endif %} text-xs"></i>
+                    </div>
+                    <span class="text-sm font-medium">{{ message }}</span>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
             {% endif %}
             {% endwith %}
 
@@ -102,5 +177,6 @@
             document.getElementById("mobile-menu").classList.toggle("hidden");
         });
     </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/main.min.js"></script>
 </body>
 </html>

@@ -1,57 +1,174 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    {% if idea %}Edit Idea{% else %}New Idea{% endif %}
+    {% if idea %}Edit Idea{% else %}New Idea{% endif %} - ContentIdeaHub
 {% endblock %}
 
 {% block content %}
 
-<div class="flex items-center justify-center">
-    <div class="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">
-            {% if idea %}Edit{% else %}Add{% endif %} Idea
-        </h2>
+<!-- Header -->
+<div class="mb-8">
+    <div class="flex items-center space-x-4 mb-4">
+        <a href="{{ url_for('main.index') }}" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+            <i class="fas fa-arrow-left text-sm text-wire-text"></i>
+        </a>
+        <h1 class="text-2xl font-bold text-wire-text">
+            {% if idea %}Edit Idea{% else %}Create New Idea{% endif %}
+        </h1>
+    </div>
+    <p class="text-gray-500 ml-12">
+        {% if idea %}Update your content idea details{% else %}Add a new content idea to your collection{% endif %}
+    </p>
+</div>
 
+<!-- Form Container -->
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white border-2 border-wire-border rounded-lg p-8">
         <form method="POST" class="space-y-6">
             {{ form.hidden_tag() }}
 
-            <!-- Title -->
+            <!-- Title Field -->
             <div>
-                {{ form.title.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-                {{ form.title(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+                <label class="block text-sm font-medium text-wire-text mb-2">
+                    {{ form.title.label.text }}
+                    <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    {{ form.title(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent transition-colors", 
+                        placeholder="Enter your content idea title") }}
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-heading text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+                {% if form.title.errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in form.title.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Description -->
+            <!-- Description Field -->
             <div>
-                {{ form.description.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-                {{ form.description(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500", rows=5) }}
+                <label class="block text-sm font-medium text-wire-text mb-2">
+                    {{ form.description.label.text }}
+                </label>
+                <div class="relative">
+                    {{ form.description(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent transition-colors resize-none", 
+                        rows=5, placeholder="Describe your content idea in detail...") }}
+                    <div class="absolute top-3 right-3 pointer-events-none">
+                        <i class="fas fa-align-left text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+                {% if form.description.errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in form.description.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Tags -->
+            <!-- Tags Field -->
             <div>
-                {{ form.tags.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-                {{ form.tags(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+                <label class="block text-sm font-medium text-wire-text mb-2">
+                    {{ form.tags.label.text }}
+                </label>
+                <div class="relative">
+                    {{ form.tags(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent transition-colors", 
+                        placeholder="video, tutorial, social-media, trending") }}
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-tags text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Separate tags with commas</p>
+                {% if form.tags.errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in form.tags.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Status -->
+            <!-- Status Field -->
             <div>
-                {{ form.status.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-                {{ form.status(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+                <label class="block text-sm font-medium text-wire-text mb-2">
+                    {{ form.status.label.text }}
+                </label>
+                <div class="relative">
+                    {{ form.status(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent transition-colors appearance-none bg-white") }}
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+                {% if form.status.errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in form.status.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Actions -->
-            <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                <button type="submit"
-                    class="w-full sm:w-auto px-4 py-2 bg-gray-800 text-white rounded-md text-sm font-medium hover:bg-gray-900 transition">
-                    {% if idea %}Update{% else %}Save{% endif %}
+            <!-- Status Legend -->
+            <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                <h4 class="text-sm font-medium text-wire-text mb-3">Status Guide:</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-yellow-400 rounded-full border-2 border-yellow-500"></div>
+                        <span><strong>Draft:</strong> Initial idea</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-blue-400 rounded-full border-2 border-blue-500"></div>
+                        <span><strong>To Film:</strong> Ready to create</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-400 rounded-full border-2 border-green-500"></div>
+                        <span><strong>Published:</strong> Content is live</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-6">
+                <button type="submit" class="flex-1 px-6 py-3 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-save text-sm"></i>
+                    <span>{% if idea %}Update Idea{% else %}Save Idea{% endif %}</span>
                 </button>
-                <a href="{{ url_for('main.index') }}"
-                    class="w-full sm:w-auto px-4 py-2 border border-gray-400 rounded-md text-sm text-gray-800 hover:bg-gray-200 text-center transition">
-                    Cancel
+                <a href="{{ url_for('main.index') }}" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-times text-sm"></i>
+                    <span>Cancel</span>
                 </a>
             </div>
         </form>
     </div>
+
+    <!-- Additional Actions (only for edit mode) -->
+    {% if idea %}
+    <div class="mt-6 bg-gray-50 border-2 border-gray-200 rounded-lg p-6">
+        <h3 class="text-sm font-medium text-wire-text mb-4">Additional Actions</h3>
+        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+            <form method="POST" action="{{ url_for('main.duplicate_idea', id=idea.id) }}" class="inline">
+                <button type="submit" class="w-full sm:w-auto px-4 py-2 border-2 border-green-300 text-green-600 rounded-lg hover:bg-green-50 transition-colors flex items-center justify-center space-x-2">
+                    <i class="fas fa-copy text-sm"></i>
+                    <span>Duplicate</span>
+                </button>
+            </form>
+            <a href="{{ url_for('main.export_markdown', id=idea.id) }}" class="w-full sm:w-auto px-4 py-2 border-2 border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors flex items-center justify-center space-x-2">
+                <i class="fas fa-file-export text-sm"></i>
+                <span>Export MD</span>
+            </a>
+            <form method="POST" action="{{ url_for('main.delete_idea', id=idea.id) }}" class="inline">
+                <button type="submit" onclick="return confirm('Are you sure you want to delete this idea? This action cannot be undone.')" class="w-full sm:w-auto px-4 py-2 border-2 border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center space-x-2">
+                    <i class="fas fa-trash text-sm"></i>
+                    <span>Delete</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

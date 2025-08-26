@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{% block title %}AI Suggestions - ContentIdeaHub{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="mb-8">
+    <div class="flex items-center space-x-4 mb-4">
+        <a href="{{ url_for('main.suggest_idea') }}" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+            <i class="fas fa-arrow-left text-sm text-wire-text"></i>
+        </a>
+        <h1 class="text-2xl font-bold text-wire-text">AI Generated Ideas</h1>
+    </div>
+    <div class="ml-12">
+        <p class="text-gray-500 mb-2">Based on your tags: <strong>{{ tags }}</strong></p>
+        <div class="flex flex-wrap gap-2">
+            {% for tag in tags.split(',') if tag.strip() %}
+            <span class="px-2 py-1 bg-purple-100 border border-purple-300 rounded text-xs text-purple-700">
+                #{{ tag.strip() }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if suggestions %}
+<!-- Action Bar -->
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+    <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-green-100 rounded-full border-2 border-green-300 flex items-center justify-center">
+            <i class="fas fa-check text-green-600 text-sm"></i>
+        </div>
+        <span class="text-sm font-medium text-wire-text">{{ suggestions|length }} ideas generated</span>
+    </div>
+    <div class="flex space-x-3">
+        <button onclick="selectAll()" class="px-4 py-2 border-2 border-wire-accent text-wire-accent rounded-lg hover:bg-wire-accent hover:text-white transition-colors text-sm">
+            Select All
+        </button>
+        <button onclick="saveSelected()" class="px-4 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors text-sm">
+            Save Selected
+        </button>
+    </div>
+</div>
+
+<!-- Suggestions Grid -->
+<div class="space-y-4 mb-8">
+    {% for suggestion in suggestions %}
+    <div class="bg-white border-2 border-wire-border rounded-lg p-6 hover:border-purple-300 transition-colors suggestion-card" data-index="{{ loop.index0 }}">
+        <div class="flex items-start space-x-4">
+            <!-- Selection Checkbox -->
+            <div class="flex items-center h-6">
+                <input type="checkbox" id="suggestion-{{ loop.index0 }}" class="suggestion-checkbox w-4 h-4 text-wire-accent border-2 border-gray-300 rounded focus:ring-wire-accent focus:ring-2">
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1">
+                <!-- AI Badge -->
+                <div class="flex items-center space-x-2 mb-3">
+                    <div class="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded text-xs font-medium flex items-center space-x-1">
+                        <i class="fas fa-robot text-xs"></i>
+                        <span>AI Generated</span>
+                    </div>
+                    <div class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs text-gray-600">
+                        Suggestion {{ loop.index }}
+                    </div>
+                </div>
+                
+                <!-- Suggestion Content -->
+                <div class="prose prose-sm max-w-none suggestion-content text-wire-text">
+                    {{ suggestion|safe }}
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex flex-col space-y-2">
+                <button onclick="createIdea({{ loop.index0 }})" class="w-8 h-8 border-2 border-green-300 text-green-600 rounded hover:bg-green-50 transition-colors" title="Create Idea">
+                    <i class="fas fa-plus text-xs"></i>
+                </button>
+                <button onclick="copyToClipboard({{ loop.index0 }})" class="w-8 h-8 border-2 border-blue-300 text-blue-600 rounded hover:bg-blue-50 transition-colors" title="Copy">
+                    <i class="fas fa-copy text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Bottom Actions -->
+<div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        <div>
+            <h3 class="font-medium text-wire-text mb-2">What's Next?</h3>
+            <p class="text-sm text-gray-600">Select ideas you like and save them to your dashboard, or generate new suggestions.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+            <a href="{{ url_for('main.suggest_idea') }}" class="px-6 py-2 border-2 border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors text-sm flex items-center justify-center space-x-2">
+                <i class="fas fa-refresh text-sm"></i>
+                <span>Generate More</span>
+            </a>
+            <a href="{{ url_for('main.index') }}" class="px-6 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors text-sm flex items-center justify-center space-x-2">
+                <i class="fas fa-home text-sm"></i>
+                <span>Back to Dashboard</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- No Suggestions State -->
+<div class="bg-white border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+    <div class="w-16 h-16 mx-auto mb-4 border-2 border-gray-300 rounded-lg flex items-center justify-center">
+        <i class="fas fa-robot text-2xl text-gray-400"></i>
+    </div>
+    <h3 class="text-lg font-medium text-gray-500 mb-2">No Suggestions Generated</h3>
+    <p class="text-gray-400 mb-6">The AI couldn't generate suggestions for your tags. Try different or more specific keywords.</p>
+    <a href="{{ url_for('main.suggest_idea') }}" class="px-6 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors">
+        Try Again
+    </a>
+</div>
+{% endif %}
+
+<!-- Create Idea Modal -->
+<div id="create-idea-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white border-2 border-wire-border rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-start mb-6">
+            <h3 class="text-lg font-bold text-wire-text">Create New Idea</h3>
+            <button onclick="closeCreateModal()" class="w-6 h-6 border-2 border-gray-300 rounded flex items-center justify-center hover:border-red-400 hover:text-red-600 transition-colors">
+                <i class="fas fa-times text-xs"></i>
+            </button>
+        </div>
+        
+        <form id="create-idea-form" class="space-y-4">
+            <!-- Title -->
+            <div>
+                <label class="block text-sm font-medium text-wire-text mb-2">Title *</label>
+                <input type="text" id="idea-title" class="w-full px-4 py-2 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent" placeholder="Enter idea title" required>
+            </div>
+            
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-wire-text mb-2">Description</label>
+                <textarea id="idea-description" rows="4" class="w-full px-4 py-2 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent" placeholder="Describe your idea..."></textarea>
+            </div>
+            
+            <!-- Tags -->
+            <div>
+                <label class="block text-sm font-medium text-wire-text mb-2">Tags</label>
+                <input type="text" id="idea-tags" class="w-full px-4 py-2 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent" placeholder="Enter tags separated by commas" value="{{ tags }}">
+            </div>
+            
+            <!-- Status -->
+            <div>
+                <label class="block text-sm font-medium text-wire-text mb-2">Status</label>
+                <select id="idea-status" class="w-full px-4 py-2 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent">
+                    <option value="Draft">Draft</option>
+                    <option value="To Film">To Film</option>
+                    <option value="Published">Published</option>
+                </select>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex space-x-4 pt-4">
+                <button type="submit" class="flex-1 px-6 py-2 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors">
+                    Save Idea
+                </button>
+                <button type="button" onclick="closeCreateModal()" class="flex-1 px-6 py-2 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let suggestions = {{ suggestions|tojson|safe }};
+
+function selectAll() {
+    const checkboxes = document.querySelectorAll('.suggestion-checkbox');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+}
+
+function saveSelected() {
+    const selected = document.querySelectorAll('.suggestion-checkbox:checked');
+    if (selected.length === 0) {
+        alert('Please select at least one suggestion to save.');
+        return;
+    }
+    
+    alert(`Saving ${selected.length} selected ideas to your dashboard...`);
+    window.location.href = '{{ url_for("main.index") }}';
+}
+
+function createIdea(index) {
+    const suggestion = suggestions[index];
+    const modal = document.getElementById('create-idea-modal');
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = suggestion;
+    const textContent = tempDiv.textContent || tempDiv.innerText || "";
+    const firstLine = textContent.split('\n')[0].trim();
+    const title = firstLine.length > 100 ? firstLine.substring(0, 100) + '...' : firstLine;
+    
+    document.getElementById('idea-title').value = title;
+    document.getElementById('idea-description').value = textContent;
+    
+    modal.classList.remove('hidden');
+}
+
+function closeCreateModal() {
+    document.getElementById('create-idea-modal').classList.add('hidden');
+}
+
+function copyToClipboard(index) {
+    const suggestion = suggestions[index];
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = suggestion;
+    const textContent = tempDiv.textContent || tempDiv.innerText || "";
+    
+    navigator.clipboard.writeText(textContent).then(() => {
+        const card = document.querySelector(`[data-index="${index}"]`);
+        const copyBtn = card.querySelector('[title="Copy"]');
+        const originalHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check text-xs"></i>';
+        copyBtn.classList.remove('border-blue-300', 'text-blue-600', 'hover:bg-blue-50');
+        copyBtn.classList.add('border-green-300', 'text-green-600', 'bg-green-50');
+        
+        setTimeout(() => {
+            copyBtn.innerHTML = originalHTML;
+            copyBtn.classList.add('border-blue-300', 'text-blue-600', 'hover:bg-blue-50');
+            copyBtn.classList.remove('border-green-300', 'text-green-600', 'bg-green-50');
+        }, 2000);
+    }).catch(() => {
+        alert('Failed to copy to clipboard');
+    });
+}
+
+document.getElementById('create-idea-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = {
+        title: document.getElementById('idea-title').value,
+        description: document.getElementById('idea-description').value,
+        tags: document.getElementById('idea-tags').value,
+        status: document.getElementById('idea-status').value
+    };
+
+    fetch("{{ url_for('main.create_from_suggestion') }}", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("✅ Idea created successfully!");
+            closeCreateModal();
+            window.location.href = "{{ url_for('main.index') }}";
+        } else {
+            alert("❌ Error creating idea");
+        }
+    })
+    .catch(() => alert("❌ Failed to save idea"));
+});
+
+</script>
+
+{% endblock %}

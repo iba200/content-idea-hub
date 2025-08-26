@@ -1,40 +1,90 @@
+<!-- LOGIN PAGE -->
 {% extends 'base.html' %}
-{% block title %}Login{% endblock %}
+{% block title %}Login - ContentIdeaHub{% endblock %}
 {% block content %}
 
-<div class="flex items-center justify-center min-h-[70vh]">
-    <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h2>
-
-        <form method="POST" class="space-y-4">
-            {{ form.hidden_tag() }}
-
-            <!-- Username -->
-            <div>
-                {{ form.username.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-                {{ form.username(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+<div class="min-h-[60vh] flex items-center justify-center">
+    <div class="w-full max-w-md">
+        <!-- Logo/Header -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto bg-wire-accent rounded-lg border-2 border-wire-accent flex items-center justify-center mb-4">
+                <i class="fas fa-lightbulb text-2xl text-white"></i>
             </div>
+            <h1 class="text-2xl font-bold text-wire-text mb-2">Welcome Back</h1>
+            <p class="text-gray-500">Sign in to your ContentHub account</p>
+        </div>
 
-            <!-- Password -->
-            <div>
-                {{ form.password.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-                {{ form.password(class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500") }}
+        <!-- Login Form -->
+        <div class="bg-white border-2 border-wire-border rounded-lg p-8">
+            <form method="POST" class="space-y-6">
+                {{ form.hidden_tag() }}
+
+                <!-- Username Field -->
+                <div>
+                    <label class="block text-sm font-medium text-wire-text mb-2">
+                        {{ form.username.label.text }}
+                    </label>
+                    <div class="relative">
+                        {{ form.username(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent transition-colors", 
+                            placeholder="Enter your username") }}
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <i class="fas fa-user text-gray-400 text-sm"></i>
+                        </div>
+                    </div>
+                    {% if form.username.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label class="block text-sm font-medium text-wire-text mb-2">
+                        {{ form.password.label.text }}
+                    </label>
+                    <div class="relative">
+                        {{ form.password(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent transition-colors", 
+                            placeholder="Enter your password") }}
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <i class="fas fa-lock text-gray-400 text-sm"></i>
+                        </div>
+                    </div>
+                    {% if form.password.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.password.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full px-6 py-3 bg-wire-accent text-white border-2 border-wire-accent rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-sign-in-alt text-sm"></i>
+                    <span>Sign In</span>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="my-6 flex items-center">
+                <div class="flex-1 border-t-2 border-wire-border"></div>
+                <span class="px-4 text-sm text-gray-500">or</span>
+                <div class="flex-1 border-t-2 border-wire-border"></div>
             </div>
-
-            <!-- Submit -->
-            <button type="submit"
-                class="w-full py-2 px-4 bg-gray-800 text-white rounded-md text-sm font-medium hover:bg-gray-900 transition">
-                Login
-            </button>
 
             <!-- Register Link -->
-            <p class="text-sm text-gray-600 mt-2 text-center">
-                Don't have an account? 
-                <a href="{{ url_for('main.register') }}" class="text-blue-600 hover:underline">
-                    Register here
-                </a>.
-            </p>
-        </form>
+            <div class="text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account?
+                    <a href="{{ url_for('main.register') }}" class="text-wire-accent hover:underline font-medium">
+                        Create one here
+                    </a>
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
