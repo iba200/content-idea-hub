@@ -280,3 +280,15 @@ def create_from_suggestion():
     db.session.add(idea)
     db.session.commit()
     return jsonify({"success": True, "id": idea.id})
+
+
+# ------------------ ABOUT ------------------ #
+@bp.route('/about')
+def about():
+    """Page À propos"""
+    return render_template('about.html', title='About')
+# ------------------ FAQ ------------------ #
+@bp.route('/faq')
+def faq():
+    """Page FAQ"""
+    return render_template('faq.html', title='FAQ')

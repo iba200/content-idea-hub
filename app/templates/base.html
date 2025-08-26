@@ -33,83 +33,118 @@
 
 <body class="bg-wire-gray text-wire-text font-sans min-h-screen">
     <div class="flex min-h-screen">
-        
+
         <!-- Sidebar (Desktop) -->
         <aside class="hidden lg:flex w-64 flex-col bg-white border-r-2 border-wire-border">
             <!-- Logo -->
             <div class="p-6 border-b-2 border-wire-border">
                 <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
+                    <div
+                        class="w-8 h-8 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
                         <i class="fas fa-lightbulb text-white text-sm"></i>
                     </div>
                     <span class="text-xl font-bold text-wire-text">ContentHub</span>
                 </div>
             </div>
-            
+
             <!-- Navigation -->
             <nav class="flex-1 p-4 space-y-2">
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('main.index') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                <a href="{{ url_for('main.index') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
                         <i class="fas fa-th-large text-xs text-wire-text"></i>
                     </div>
                     Dashboard
                 </a>
-                <a href="{{ url_for('main.new_idea') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                <a href="{{ url_for('main.new_idea') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
                         <i class="fas fa-plus text-xs text-wire-text"></i>
                     </div>
                     New Idea
                 </a>
-                <a href="{{ url_for('main.import_ideas') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                <a href="{{ url_for('main.import_ideas') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
                         <i class="fas fa-upload text-xs text-wire-text"></i>
                     </div>
                     Import
                 </a>
-                <a href="{{ url_for('main.export_ideas') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                <a href="{{ url_for('main.export_ideas') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
                         <i class="fas fa-download text-xs text-wire-text"></i>
                     </div>
                     Export
                 </a>
-                <a href="{{ url_for('main.calendar')}}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                <a href="{{ url_for('main.calendar')}}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
                         <i class="fas fa-calendar text-xs text-wire-text"></i>
                     </div>
                     Calendar
                 </a>
-                <a href="{{ url_for('main.suggest_idea')}}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                <a href="{{ url_for('main.suggest_idea')}}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
                         <i class="fas fa-magic text-xs text-wire-text"></i>
                     </div>
                     AI Suggest
                 </a>
-                
+                <a href="{{ url_for('main.about') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-info text-xs text-wire-text"></i>
+                    </div>
+                    About
+                </a>
+                <a href="{{ url_for('main.faq') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-question-circle text-xs text-wire-text"></i>
+                    </div>
+                    FAQ
+                </a>
+
                 <!-- User section -->
                 <div class="mt-8 pt-4 border-t-2 border-wire-border">
                     <div class="flex items-center px-4 py-2 text-sm text-gray-500">
-                        <div class="w-6 h-6 border-2 border-wire-border rounded-full mr-3 flex items-center justify-center">
+                        <div
+                            class="w-6 h-6 border-2 border-wire-border rounded-full mr-3 flex items-center justify-center">
                             <i class="fas fa-user text-xs"></i>
                         </div>
                         {{ current_user.username }}
                     </div>
-                    <a href="{{ url_for('main.logout') }}" class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-red-200 hover:bg-red-50 rounded-lg transition-all duration-200 group">
-                        <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-red-300">
+                    <a href="{{ url_for('main.logout') }}"
+                        class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-red-200 hover:bg-red-50 rounded-lg transition-all duration-200 group">
+                        <div
+                            class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-red-300">
                             <i class="fas fa-sign-out-alt text-xs text-wire-text"></i>
                         </div>
                         Logout
                     </a>
                 </div>
                 {% else %}
-                <a href="{{ url_for('main.login') }}" class="flex items-center px-4 py-3 text-sm border-2 border-wire-accent bg-wire-accent text-white rounded-lg hover:bg-blue-600 transition-all duration-200">
+                <a href="{{ url_for('main.login') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-wire-accent bg-wire-accent text-white rounded-lg hover:bg-blue-600 transition-all duration-200">
                     <div class="w-6 h-6 border-2 border-white rounded mr-3 flex items-center justify-center">
                         <i class="fas fa-sign-in-alt text-xs text-white"></i>
                     </div>
                     Login
                 </a>
-                <a href="{{ url_for('main.register') }}" class="flex items-center px-4 py-3 text-sm border-2 border-wire-border hover:border-wire-accent hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                    <div class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                <a href="{{ url_for('main.register') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-wire-border hover:border-wire-accent hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
                         <i class="fas fa-user-plus text-xs text-wire-text"></i>
                     </div>
                     Register
@@ -119,30 +154,46 @@
         </aside>
 
         <!-- Mobile Header -->
-        <div class="lg:hidden w-full bg-white border-b-2 border-wire-border p-4 flex justify-between items-center sticky top-0 z-30">
+        <div
+            class="lg:hidden w-full bg-white border-b-2 border-wire-border p-4 flex justify-between items-center sticky top-0 z-30">
             <div class="flex items-center space-x-3">
-                <div class="w-6 h-6 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
+                <div
+                    class="w-6 h-6 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
                     <i class="fas fa-lightbulb text-white text-xs"></i>
                 </div>
                 <span class="text-lg font-bold text-wire-text">ContentHub</span>
             </div>
-            <button id="menu-toggle" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
+            <button id="menu-toggle"
+                class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
                 <i class="fas fa-bars text-sm text-wire-text"></i>
             </button>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden absolute top-16 left-4 right-4 bg-white border-2 border-wire-border rounded-lg shadow-lg z-20 p-4 lg:hidden">
+        <div id="mobile-menu"
+            class="hidden absolute top-16 left-4 right-4 bg-white border-2 border-wire-border rounded-lg shadow-lg z-20 p-4 lg:hidden">
             {% if current_user.is_authenticated %}
-            <a href="{{ url_for('main.index') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Dashboard</a>
-            <a href="{{ url_for('main.new_idea') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">New Idea</a>
-            <a href="{{ url_for('main.import_ideas') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Import</a>
-            <a href="{{ url_for('main.export_ideas') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Export</a>
-            <a href="{{ url_for('main.calendar')}}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Calendar</a>
-            <a href="{{ url_for('main.suggest_idea')}}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">AI Suggest</a>
-            <a href="{{ url_for('main.logout') }}" class="block py-3 px-4 text-sm hover:bg-red-50 text-red-600">Logout</a>
+            <a href="{{ url_for('main.index') }}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Dashboard</a>
+            <a href="{{ url_for('main.new_idea') }}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">New Idea</a>
+            <a href="{{ url_for('main.import_ideas') }}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Import</a>
+            <a href="{{ url_for('main.export_ideas') }}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Export</a>
+            <a href="{{ url_for('main.calendar')}}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Calendar</a>
+            <a href="{{ url_for('main.suggest_idea')}}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">AI Suggest</a>
+            <a href="{{ url_for('main.about') }}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">About</a>
+            <a href="{{ url_for('main.faq') }}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">FAQ</a>
+            <a href="{{ url_for('main.logout') }}"
+                class="block py-3 px-4 text-sm hover:bg-red-50 text-red-600">Logout</a>
             {% else %}
-            <a href="{{ url_for('main.login') }}" class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Login</a>
+            <a href="{{ url_for('main.login') }}"
+                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Login</a>
             <a href="{{ url_for('main.register') }}" class="block py-3 px-4 text-sm hover:bg-wire-hover">Register</a>
             {% endif %}
         </div>
@@ -158,8 +209,10 @@
                     {% if category == 'success' %} border-green-300 bg-green-50 text-green-800
                     {% elif category == 'danger' %} border-red-300 bg-red-50 text-red-800
                     {% else %} border-blue-300 bg-blue-50 text-blue-800 {% endif %}">
-                    <div class="w-6 h-6 border-2 {% if category == 'success' %} border-green-400 {% elif category == 'danger' %} border-red-400 {% else %} border-blue-400 {% endif %} rounded-full flex items-center justify-center">
-                        <i class="fas {% if category == 'success' %} fa-check {% elif category == 'danger' %} fa-exclamation {% else %} fa-info {% endif %} text-xs"></i>
+                    <div
+                        class="w-6 h-6 border-2 {% if category == 'success' %} border-green-400 {% elif category == 'danger' %} border-red-400 {% else %} border-blue-400 {% endif %} rounded-full flex items-center justify-center">
+                        <i
+                            class="fas {% if category == 'success' %} fa-check {% elif category == 'danger' %} fa-exclamation {% else %} fa-info {% endif %} text-xs"></i>
                     </div>
                     <span class="text-sm font-medium">{{ message }}</span>
                 </div>
@@ -177,6 +230,7 @@
             document.getElementById("mobile-menu").classList.toggle("hidden");
         });
     </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/main.min.js"></script>
 </body>
+
 </html>
