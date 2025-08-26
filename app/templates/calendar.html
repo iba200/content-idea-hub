@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Editorial Calendar{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Editorial Calendar</h2>
+<div id="calendar" class="bg-pure-white p-6 rounded-lg shadow-md"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: [
+                {% for idea in ideas %}
+                {
+                    title: '{{ idea.title }}',
+                    start: '{{ idea.timestamp.strftime('%Y-%m-%d') }}',
+                    extendedProps: {
+                        status: '{{ idea.status }}',
+                        tags: '{{ idea.tags }}'
+                    },
+                    backgroundColor: '{{ '#FFFFFF' if idea.status == 'Published' else '#4B5563' if idea.status == 'To Film' else '#D1D5DB' }}',
+                    textColor: '{{ '#4B5563' if idea.status == 'Published' else '#FFFFFF' }}'
+                },
+                {% endfor %}
+            ],
+            eventClick: function(info) {
+                alert('Idea: ' + info.event.title + '\nStatus: ' + info.event.extendedProps.status + '\nTags: ' + info.event.extendedProps.tags);
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

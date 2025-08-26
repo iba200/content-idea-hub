@@ -7,6 +7,8 @@
     <title>{% block title %}{% endblock %}</title>
     <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet" />
     <script src="https://kit.fontawesome.com/aee6406d64.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.js"></script>
 </head>
 
 <body class="bg-gray-100 font-sans text-gray-900">
@@ -30,6 +32,12 @@
                 </a>
                 <a href="{{ url_for('main.export_ideas') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
                     <i class="fas fa-file-export mr-3"></i> Export CSV
+                </a>
+                <a href="" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-calendar-alt mr-3"></i> Calendar
+                </a>
+                <a href="" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-lightbulb mr-3"></i> Suggest Ideas
                 </a>
                 <a href="{{ url_for('main.logout') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200">
                     <i class="fas fa-sign-out-alt mr-3"></i> Logout
@@ -61,6 +69,8 @@
             <a href="{{ url_for('main.new_idea') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Add Idea</a>
             <a href="{{ url_for('main.import_ideas') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Import CSV</a>
             <a href="{{ url_for('main.export_ideas') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Export CSV</a>
+            <a href="#" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Calendar</a>
+            <a href="#" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Suggest Ideas</a>
             <a href="{{ url_for('main.logout') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Logout</a>
             {% else %}
             <a href="{{ url_for('main.login') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded">Login</a>

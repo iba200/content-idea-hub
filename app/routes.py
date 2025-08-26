@@ -1,13 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, Response
-from flask_login import login_user, logout_user, current_user, login_required
-from app import db, login_manager
-from app.models import User
-from app.forms import RegisterForm, LoginForm, SearchForm, ImportForm
-from app.models import Idea
-from app.forms import IdeaForm
 import csv
 from io import StringIO
+from flask import (Blueprint, Response, flash, redirect, render_template, url_for)
+from flask_login import current_user, login_required, login_user, logout_user
+from app import db
+from app.forms import IdeaForm, ImportForm, LoginForm, RegisterForm, SearchForm
+from app.models import Idea, User
 from flask_paginate import Pagination, get_page_args
+
 
 bp = Blueprint('main', __name__)
 
@@ -20,6 +19,9 @@ def register():
         return redirect(url_for('main.index'))
     form = RegisterForm()
     if form.validate_on_submit():
+        if User.query.filter_by(username=form.username.data).first():
+            flash('Username already exists', 'danger')
+            return redirect(url_for('main.register'))
         user = User(username=form.username.data)
         user.set_password(form.password.data)
         db.session.add(user)
@@ -47,7 +49,7 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
-from flask_paginate import Pagination, get_page_args
+
 
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
@@ -133,9 +135,6 @@ def export_ideas():
         headers={'Content-Disposition': 'attachment; filename=ideas.csv'}
     )
 
-from app.forms import ImportForm
-import csv
-from io import StringIO
 
 @bp.route('/ideas/import', methods=['GET', 'POST'])
 @login_required
@@ -157,3 +156,10 @@ def import_ideas():
         flash('Ideas imported successfully!', 'success')
         return redirect(url_for('main.index'))
     return render_template('import.html', form=form, title='Import Ideas')
+
+# route for calendar view
+@bp.route('/calendar', methods=['GET'])
+@login_required
+def calendar_view():
+    ideas = Idea.query.filter_by(user_id=current_user.id).all()
+    return render_template('calendar.html', ideas=ideas, title='Calendar View')
