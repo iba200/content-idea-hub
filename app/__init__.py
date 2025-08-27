@@ -46,5 +46,9 @@ def create_app(config_class=Config):
     from app import routes, models, forms
     from app.routes import bp
     
+    # Nouveau blueprint admin
+    from app.admin_routes import admin_bp
+    app.register_blueprint(admin_bp)
+
     app.register_blueprint(bp)
     return app

@@ -1,0 +1,364 @@
+<!-- app/templates/admin/analytics.html -->
+{% extends "admin/base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-wireframe-800 mb-2">ANALYTICS DASHBOARD</h2>
+    <p class="text-wireframe-600">Detailed insights and performance metrics</p>
+</div>
+
+<!-- Chart Controls -->
+<div class="wireframe-border bg-white p-4 rounded-lg mb-8">
+    <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-wireframe-800">DATA VISUALIZATION</h3>
+        <div class="flex space-x-2">
+            <button onclick="refreshCharts()" 
+                    class="px-4 py-2 bg-wireframe-800 text-white text-sm font-medium hover:bg-wireframe-700">
+                REFRESH DATA
+            </button>
+            <select id="timeRange" class="px-3 py-2 wireframe-border text-sm" onchange="updateCharts()">
+                <option value="7">Last 7 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90" selected>Last 90 days</option>
+                <option value="365">Last year</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="wireframe-border bg-white p-6 rounded-lg">
+        <h3 class="text-lg font-bold text-wireframe-800 mb-4">USER GROWTH</h3>
+        <canvas id="userGrowthChart" width="400" height="200"></canvas>
+    </div>
+
+    <div class="wireframe-border bg-white p-6 rounded-lg">
+        <h3 class="text-lg font-bold text-wireframe-800 mb-4">IDEAS BY CATEGORY</h3>
+        <canvas id="categoryChart" width="400" height="200"></canvas>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="wireframe-border bg-white p-6 rounded-lg">
+        <h3 class="text-lg font-bold text-wireframe-800 mb-4">WEEKLY ACTIVITY</h3>
+        <canvas id="activityChart" width="400" height="200"></canvas>
+    </div>
+
+    <div class="wireframe-border bg-white p-6 rounded-lg">
+        <h3 class="text-lg font-bold text-wireframe-800 mb-4">ENGAGEMENT METRICS</h3>
+        <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-wireframe-50 wireframe-border">
+                <span class="text-sm font-medium text-wireframe-700">Ideas per User</span>
+                <span class="text-lg font-bold text-wireframe-800">{{ "%.1f"|format((total_ideas / total_users) if total_users > 0 else 0) }}</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-wireframe-50 wireframe-border">
+                <span class="text-sm font-medium text-wireframe-700">Publication Rate</span>
+                <span class="text-lg font-bold text-wireframe-800">{{ "%.1f"|format((published_ideas / total_ideas * 100) if total_ideas > 0 else 0) }}%</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-wireframe-50 wireframe-border">
+                <span class="text-sm font-medium text-wireframe-700">Active Users</span>
+                <span class="text-lg font-bold text-wireframe-800">{{ "%.1f"|format((active_users / total_users * 100) if total_users > 0 else 0) }}%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Tags Analysis -->
+<div class="wireframe-border bg-white rounded-lg mb-8">
+    <div class="p-6 border-b border-wireframe-200">
+        <h3 class="text-lg font-bold text-wireframe-800">TOP CONTENT TAGS</h3>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {% for tag, count in top_tags %}
+            <div class="text-center p-4 bg-wireframe-50 wireframe-border">
+                <div class="text-2xl font-bold text-wireframe-800">{{ count }}</div>
+                <div class="text-sm text-wireframe-600 capitalize">{{ tag }}</div>
+                <div class="w-full bg-wireframe-200 h-2 mt-2">
+                    <div class="bg-wireframe-600 h-2" style="width: {{ (count / top_tags[0][1] * 100) if top_tags else 0 }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if not top_tags %}
+            <div class="col-span-full text-center py-8 text-wireframe-500">
+                <p>No tag data available</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Data Export -->
+<div class="wireframe-border bg-white rounded-lg">
+    <div class="p-6 border-b border-wireframe-200">
+        <h3 class="text-lg font-bold text-wireframe-800">DATA EXPORT</h3>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button onclick="exportData('users')" 
+                    class="p-4 wireframe-border hover:bg-wireframe-50 text-center">
+                <div class="text-2xl mb-2">👥</div>
+                <div class="text-sm font-medium text-wireframe-800">Export Users</div>
+                <div class="text-xs text-wireframe-500">CSV format</div>
+            </button>
+            
+            <button onclick="exportData('ideas')" 
+                    class="p-4 wireframe-border hover:bg-wireframe-50 text-center">
+                <div class="text-2xl mb-2">💡</div>
+                <div class="text-sm font-medium text-wireframe-800">Export Ideas</div>
+                <div class="text-xs text-wireframe-500">CSV format</div>
+            </button>
+            
+            <button onclick="exportData('analytics')" 
+                    class="p-4 wireframe-border hover:bg-wireframe-50 text-center">
+                <div class="text-2xl mb-2">📊</div>
+                <div class="text-sm font-medium text-wireframe-800">Export Analytics</div>
+                <div class="text-xs text-wireframe-500">JSON format</div>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Chart.js configuration
+    Chart.defaults.font.family = 'monospace';
+    Chart.defaults.color = '#64748b';
+    
+    let userGrowthChart, categoryChart, activityChart;
+    
+    // Initialize charts when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCharts();
+    });
+    
+    function initializeCharts() {
+        // User Growth Chart
+        const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+        userGrowthChart = new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: {{ months|tojson }},
+                datasets: [{
+                    label: 'New Users',
+                    data: {{ user_counts|tojson }},
+                    borderColor: '#64748b',
+                    backgroundColor: 'rgba(100, 116, 139, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Category Distribution Chart
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        const topTagsData = {{ top_tags|tojson }};
+        
+        categoryChart = new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: topTagsData.map(item => item[0].charAt(0).toUpperCase() + item[0].slice(1)),
+                datasets: [{
+                    data: topTagsData.map(item => item[1]),
+                    backgroundColor: [
+                        '#ef4444',
+                        '#3b82f6',
+                        '#10b981',
+                        '#f59e0b',
+                        '#8b5cf6'
+                    ],
+                    borderColor: '#e2e8f0',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Weekly Activity Chart
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const weekdayData = {{ weekday_activity|tojson }};
+        
+        activityChart = new Chart(activityCtx, {
+            type: 'bar',
+            data: {
+                labels: weekdayNames,
+                datasets: [{
+                    label: 'Ideas Created',
+                    data: [
+                        weekdayData[1] || 0, // Monday
+                        weekdayData[2] || 0, // Tuesday
+                        weekdayData[3] || 0, // Wednesday
+                        weekdayData[4] || 0, // Thursday
+                        weekdayData[5] || 0, // Friday
+                        weekdayData[6] || 0, // Saturday
+                        weekdayData[0] || 0  // Sunday
+                    ],
+                    backgroundColor: '#64748b',
+                    borderColor: '#334155',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function refreshCharts() {
+        // Simulate data refresh
+        const button = event.target;
+        button.textContent = 'REFRESHING...';
+        button.disabled = true;
+        
+        setTimeout(() => {
+            // In a real implementation, you would fetch new data here
+            button.textContent = 'REFRESH DATA';
+            button.disabled = false;
+            
+            // Show success message
+            showNotification('Charts refreshed successfully', 'success');
+        }, 1000);
+    }
+    
+    function updateCharts() {
+        const timeRange = document.getElementById('timeRange').value;
+        // In a real implementation, you would fetch data for the selected time range
+        console.log('Updating charts for time range:', timeRange);
+        showNotification(`Updated charts for last ${timeRange} days`, 'info');
+    }
+    
+    function exportData(type) {
+        const button = event.target.closest('button');
+        const originalContent = button.innerHTML;
+        
+        button.innerHTML = `
+            <div class="text-2xl mb-2">⏳</div>
+            <div class="text-sm font-medium text-wireframe-800">Exporting...</div>
+        `;
+        button.disabled = true;
+        
+        // Simulate export process
+        setTimeout(() => {
+            let filename, data;
+            
+            switch(type) {
+                case 'users':
+                    filename = 'users_export.csv';
+                    data = 'Username,Email,Created Date,Is Admin\n'; // CSV headers
+                    break;
+                case 'ideas':
+                    filename = 'ideas_export.csv';
+                    data = 'Title,Author,Status,Tags,Created Date\n';
+                    break;
+                case 'analytics':
+                    filename = 'analytics_export.json';
+                    data = JSON.stringify({
+                        exportDate: new Date().toISOString(),
+                        totalUsers: {{ total_users|default(0) }},
+                        totalIdeas: {{ total_ideas|default(0) }},
+                        topTags: {{ top_tags|tojson }},
+                        userGrowth: {{ user_counts|tojson }}
+                    }, null, 2);
+                    break;
+            }
+            
+            // Create and download file
+            const blob = new Blob([data], { type: type === 'analytics' ? 'application/json' : 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            // Reset button
+            button.innerHTML = originalContent;
+            button.disabled = false;
+            
+            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} data exported successfully`, 'success');
+        }, 1500);
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg wireframe-border bg-white shadow-lg max-w-md`;
+        
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <span class="mr-2">${icon}</span>
+                <span class="text-sm text-wireframe-800">${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-wireframe-400 hover:text-wireframe-600">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+</script>
+{% endblock %}

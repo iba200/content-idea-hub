@@ -115,8 +115,28 @@
                     </div>
                     FAQ
                 </a>
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin.dashboard') }}"
+                        class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                        <div
+                            class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                            <i class="fas fa-crown text-xs text-wire-text"></i>
+                        </div>
+                        Admin Dashboard
+                    </a>
+                {% endif %}
 
                 <div class="mt-8 pt-4 border-t-2 border-wire-border">
+                    {% if current_user.is_admin %}
+                    <div class="flex items-center px-4 py-2 text-sm text-red-600 font-semibold">
+                        <div
+                            class="w-6 h-6 border-2 border-red-400 rounded-full mr-3 flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-xs"></i>
+                        </div>
+                        {{ current_user.username }}
+
+                    </div>
+                    {% else %}
                     <div class="flex items-center px-4 py-2 text-sm text-gray-500">
                         <div
                             class="w-6 h-6 border-2 border-wire-border rounded-full mr-3 flex items-center justify-center">
@@ -124,6 +144,7 @@
                         </div>
                         {{ current_user.username }}
                     </div>
+                    {% endif %}
                     <a href="{{ url_for('main.logout') }}"
                         class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-red-200 hover:bg-red-50 rounded-lg transition-all duration-200 group">
                         <div
@@ -174,6 +195,7 @@
                 class="lg:hidden absolute top-16 left-4 right-4 bg-white border-2 border-wire-border rounded-lg shadow-lg z-20 p-4 transform scale-95 opacity-0 hidden mobile-menu-transition"
                 aria-label="Mobile navigation">
                 {% if current_user.is_authenticated %}
+                
                 <a href="{{ url_for('main.index') }}"
                     class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover rounded-t-lg">Dashboard</a>
                 <a href="{{ url_for('main.new_idea') }}"
@@ -190,11 +212,17 @@
                     class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">About</a>
                 <a href="{{ url_for('main.faq') }}"
                     class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">FAQ</a>
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin.dashboard') }}"
+                        class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Admin Dashboard</a>
+                {% endif %}
                 <a href="{{ url_for('main.logout') }}"
                     class="block py-3 px-4 text-sm hover:bg-red-50 text-red-600 rounded-b-lg">Logout</a>
                 {% else %}
                 <a href="{{ url_for('main.login') }}"
                     class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover rounded-t-lg">Login</a>
+                <a href="{{ url_for('main.register') }}"
+                    class="block py-3 px-4 text-sm hover:bg-wire-hover rounded-b-lg">Register</a>rounded-t-lg">Login</a>
                 <a href="{{ url_for('main.register') }}"
                     class="block py-3 px-4 text-sm hover:bg-wire-hover rounded-b-lg">Register</a>
                 {% endif %}

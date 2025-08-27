@@ -88,6 +88,7 @@ content-idea-hub/
 │       ├── login.html
 │       ├── register.html
 │       └── import.html
+|       
 ├── run.py
 └── requirements.txt
 ```

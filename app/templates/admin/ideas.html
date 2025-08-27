@@ -1,0 +1,295 @@
+<!-- app/templates/admin/ideas.html -->
+{% extends "admin/base.html" %}
+
+{% block title %}Ideas Management{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-wireframe-800 mb-2">IDEAS MANAGEMENT</h2>
+    <p class="text-wireframe-600">Manage content ideas and their status</p>
+</div>
+
+<!-- Ideas Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-gray-100 wireframe-border flex items-center justify-center">
+                <span class="text-gray-600">📝</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">TOTAL</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ idea_stats.total }}</div>
+        <div class="text-sm text-wireframe-600">Total Ideas</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-yellow-100 wireframe-border flex items-center justify-center">
+                <span class="text-yellow-600">📄</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">DRAFT</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ idea_stats.draft }}</div>
+        <div class="text-sm text-wireframe-600">Draft Ideas</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-blue-100 wireframe-border flex items-center justify-center">
+                <span class="text-blue-600">🎬</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">TO FILM</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ idea_stats.to_film }}</div>
+        <div class="text-sm text-wireframe-600">Ready to Film</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-green-100 wireframe-border flex items-center justify-center">
+                <span class="text-green-600">✅</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">PUBLISHED</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ idea_stats.published }}</div>
+        <div class="text-sm text-wireframe-600">Published</div>
+    </div>
+</div>
+
+<!-- Ideas Table -->
+<div class="wireframe-border bg-white rounded-lg">
+    <div class="p-6 border-b border-wireframe-200">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold text-wireframe-800">IDEAS DATABASE</h3>
+            <div class="flex space-x-2">
+                <form method="GET" class="flex space-x-2">
+                    <select name="status" class="px-3 py-2 wireframe-border text-sm" onchange="this.form.submit()">
+                        <option value="">All Status</option>
+                        <option value="Draft" {% if status_filter == 'Draft' %}selected{% endif %}>Draft</option>
+                        <option value="To Film" {% if status_filter == 'To Film' %}selected{% endif %}>To Film</option>
+                        <option value="Published" {% if status_filter == 'Published' %}selected{% endif %}>Published</option>
+                    </select>
+                    <input type="text" name="search" value="{{ search }}" placeholder="Search ideas..." 
+                           class="px-3 py-2 wireframe-border text-sm">
+                    <button type="submit" class="px-4 py-2 bg-wireframe-800 text-white text-sm font-medium hover:bg-wireframe-700">
+                        SEARCH
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-wireframe-50">
+                <tr class="text-left">
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">IDEA</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">AUTHOR</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">STATUS</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">TAGS</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">CREATED</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-wireframe-200">
+                {% for idea in ideas.items %}
+                <tr id="idea-row-{{ idea.id }}">
+                    <td class="px-6 py-4">
+                        <div>
+                            <div class="text-sm font-medium text-wireframe-800">{{ idea.title }}</div>
+                            <div class="text-sm text-wireframe-500 truncate max-w-xs">
+                                
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 bg-wireframe-300 wireframe-border flex items-center justify-center text-xs font-bold">
+                                {{ idea.author.username[0]|upper }}
+                            </div>
+                            <div class="ml-2 text-sm text-wireframe-800">{{ idea.author.username }}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if idea.status == 'Draft' %}
+                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 wireframe-border">DRAFT</span>
+                        {% elif idea.status == 'To Film' %}
+                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 wireframe-border">TO FILM</span>
+                        {% elif idea.status == 'Published' %}
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 wireframe-border">PUBLISHED</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-wireframe-600">
+                            {% if idea.tags %}
+                                {{ idea.tags }}
+                            {% else %}
+                                <span class="text-wireframe-400">No tags</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-wireframe-500">
+                        {{ idea.timestamp.strftime('%Y-%m-%d') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                        <button onclick="viewIdea({{ idea.id }})" 
+                                class="text-wireframe-600 hover:text-wireframe-800 px-2 py-1 wireframe-border bg-wireframe-50 hover:bg-wireframe-100">
+                            VIEW
+                        </button>
+                        <button onclick="deleteIdea({{ idea.id }}, '{{ idea.title }}')" 
+                                class="text-red-600 hover:text-red-800 px-2 py-1 wireframe-border bg-red-50 hover:bg-red-100">
+                            DELETE
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if ideas.pages > 1 %}
+    <div class="p-6 border-t border-wireframe-200">
+        <div class="flex justify-between items-center">
+            <div class="text-sm text-wireframe-600">
+                Showing {{ ideas.per_page * (ideas.page - 1) + 1 }} to 
+                {{ ideas.per_page * ideas.page if ideas.has_next else ideas.total }} 
+                of {{ ideas.total }} ideas
+            </div>
+            <div class="flex space-x-1">
+                {% if ideas.has_prev %}
+                    <a href="{{ url_for('admin.ideas_management', page=ideas.prev_num, search=search, status=status_filter) }}" 
+                       class="px-3 py-2 text-sm wireframe-border bg-white hover:bg-wireframe-50">PREV</a>
+                {% endif %}
+                
+                {% for page_num in ideas.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        {% if page_num != ideas.page %}
+                            <a href="{{ url_for('admin.ideas_management', page=page_num, search=search, status=status_filter) }}" 
+                               class="px-3 py-2 text-sm wireframe-border bg-white hover:bg-wireframe-50">{{ page_num }}</a>
+                        {% else %}
+                            <span class="px-3 py-2 text-sm wireframe-border bg-wireframe-800 text-white">{{ page_num }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="px-3 py-2 text-sm">…</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if ideas.has_next %}
+                    <a href="{{ url_for('admin.ideas_management', page=ideas.next_num, search=search, status=status_filter) }}" 
+                       class="px-3 py-2 text-sm wireframe-border bg-white hover:bg-wireframe-50">NEXT</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Idea Detail Modal -->
+<div id="ideaModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white wireframe-border rounded-lg max-w-2xl w-full max-h-96 overflow-auto">
+            <div class="p-6 border-b border-wireframe-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-wireframe-800" id="modalTitle">Idea Details</h3>
+                    <button onclick="closeModal()" class="text-wireframe-400 hover:text-wireframe-600">×</button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div id="modalContent" class="space-y-4">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function viewIdea(ideaId) {
+        // Find the idea row to get details
+        const row = document.getElementById(`idea-row-${ideaId}`);
+        const title = row.querySelector('.text-sm.font-medium').textContent;
+        const content = row.querySelector('.text-sm.text-wireframe-500').textContent;
+        const author = row.querySelector('td:nth-child(2) .text-sm.text-wireframe-800').textContent;
+        const status = row.querySelector('td:nth-child(3) span').textContent;
+        const tags = row.querySelector('td:nth-child(4) .text-sm').textContent;
+        const created = row.querySelector('td:nth-child(5)').textContent;
+
+        // Update modal content
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalContent').innerHTML = `
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-wireframe-700">Content:</label>
+                    <div class="p-3 bg-wireframe-50 wireframe-border text-sm text-wireframe-800">${content}</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-wireframe-700">Author:</label>
+                        <div class="text-sm text-wireframe-800">${author}</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-wireframe-700">Status:</label>
+                        <div class="text-sm text-wireframe-800">${status}</div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-wireframe-700">Tags:</label>
+                    <div class="text-sm text-wireframe-800">${tags}</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-wireframe-700">Created:</label>
+                    <div class="text-sm text-wireframe-800">${created}</div>
+                </div>
+            </div>
+        `;
+
+        // Show modal
+        document.getElementById('ideaModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('ideaModal').classList.add('hidden');
+    }
+
+    function deleteIdea(ideaId, title) {
+        if (confirm(`Are you sure you want to delete the idea "${title}"? This action cannot be undone.`)) {
+            fetch(`{{ url_for('admin.delete_idea', idea_id=0) }}`.replace('0', ideaId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`idea-row-${ideaId}`).remove();
+                    location.reload(); // Reload to show flash message and update stats
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the idea.');
+            });
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('ideaModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

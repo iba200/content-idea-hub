@@ -1,0 +1,226 @@
+<!-- app/templates/admin/users.html -->
+{% extends "admin/base.html" %}
+
+{% block title %}Users Management{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-wireframe-800 mb-2">USERS MANAGEMENT</h2>
+    <p class="text-wireframe-600">Manage user accounts and permissions</p>
+</div>
+
+<!-- User Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-blue-100 wireframe-border flex items-center justify-center">
+                <span class="text-blue-600">👥</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">TOTAL</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ user_stats.total }}</div>
+        <div class="text-sm text-wireframe-600">Total Users</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-green-100 wireframe-border flex items-center justify-center">
+                <span class="text-green-600">✅</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">ACTIVE</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ user_stats.active }}</div>
+        <div class="text-sm text-wireframe-600">Active Users</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-red-100 wireframe-border flex items-center justify-center">
+                <span class="text-red-600">👑</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">ADMINS</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ user_stats.admin }}</div>
+        <div class="text-sm text-wireframe-600">Administrators</div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="wireframe-border bg-white rounded-lg">
+    <div class="p-6 border-b border-wireframe-200">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold text-wireframe-800">USER DATABASE</h3>
+            <div class="flex space-x-2">
+                <form method="GET" class="flex space-x-2">
+                    <input type="text" name="search" value="{{ search }}" placeholder="Search users..." 
+                           class="px-3 py-2 wireframe-border text-sm">
+                    <button type="submit" class="px-4 py-2 bg-wireframe-800 text-white text-sm font-medium hover:bg-wireframe-700">
+                        SEARCH
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-wireframe-50">
+                <tr class="text-left">
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">USER</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">STATUS</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">IDEAS</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">JOINED</th>
+                    <th class="px-6 py-3 text-xs font-medium text-wireframe-500 uppercase tracking-wider">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-wireframe-200">
+                {% for user in users.items %}
+                <tr id="user-row-{{ user.id }}">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-wireframe-300 wireframe-border flex items-center justify-center text-xs font-bold">
+                                {{ user.username[0]|upper }}
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-wireframe-800">{{ user.username }}</div>
+                                <div class="text-sm text-wireframe-500">{{ user.ideas|length }} ideas created</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if user.is_admin %}
+                            <span class="px-2 py-1 text-xs bg-red-100 text-red-800 wireframe-border">ADMIN</span>
+                        {% else %}
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 wireframe-border">USER</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-wireframe-800">
+                        {{ user.ideas|length }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-wireframe-500">
+                        {{ user.created_at.strftime('%Y-%m-%d') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                        {% if user.id != current_user.id %}
+                            <button onclick="toggleAdmin({{ user.id }}, {{ user.is_admin|tojson }})" 
+                                    class="text-wireframe-600 hover:text-wireframe-800 px-2 py-1 wireframe-border bg-wireframe-50 hover:bg-wireframe-100">
+                                {% if user.is_admin %}REMOVE ADMIN{% else %}MAKE ADMIN{% endif %}
+                            </button>
+                            <button onclick="deleteUser({{ user.id }}, '{{ user.username }}')" 
+                                    class="text-red-600 hover:text-red-800 px-2 py-1 wireframe-border bg-red-50 hover:bg-red-100">
+                                DELETE
+                            </button>
+                        {% else %}
+                            <span class="text-xs text-wireframe-400 px-2 py-1">CURRENT USER</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if users.pages > 1 %}
+    <div class="p-6 border-t border-wireframe-200">
+        <div class="flex justify-between items-center">
+            <div class="text-sm text-wireframe-600">
+                Showing {{ users.per_page * (users.page - 1) + 1 }} to 
+                {{ users.per_page * users.page if users.has_next else users.total }} 
+                of {{ users.total }} users
+            </div>
+            <div class="flex space-x-1">
+                {% if users.has_prev %}
+                    <a href="{{ url_for('admin.users_management', page=users.prev_num, search=search) }}" 
+                       class="px-3 py-2 text-sm wireframe-border bg-white hover:bg-wireframe-50">PREV</a>
+                {% endif %}
+                
+                {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        {% if page_num != users.page %}
+                            <a href="{{ url_for('admin.users_management', page=page_num, search=search) }}" 
+                               class="px-3 py-2 text-sm wireframe-border bg-white hover:bg-wireframe-50">{{ page_num }}</a>
+                        {% else %}
+                            <span class="px-3 py-2 text-sm wireframe-border bg-wireframe-800 text-white">{{ page_num }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="px-3 py-2 text-sm">…</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if users.has_next %}
+                    <a href="{{ url_for('admin.users_management', page=users.next_num, search=search) }}" 
+                       class="px-3 py-2 text-sm wireframe-border bg-white hover:bg-wireframe-50">NEXT</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleAdmin(userId, isCurrentlyAdmin) {
+        const action = isCurrentlyAdmin ? 'remove admin privileges from' : 'grant admin privileges to';
+        const username = document.querySelector(`#user-row-${userId} .text-sm.font-medium`).textContent;
+        
+        if (confirm(`Are you sure you want to ${action} ${username}?`)) {
+            fetch(`{{ url_for('admin.toggle_admin', user_id=0) }}`.replace('0', userId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the status badge
+                    const statusCell = document.querySelector(`#user-row-${userId} td:nth-child(2)`);
+                    const newStatus = data.is_admin ? 
+                        '<span class="px-2 py-1 text-xs bg-red-100 text-red-800 wireframe-border">ADMIN</span>' :
+                        '<span class="px-2 py-1 text-xs bg-green-100 text-green-800 wireframe-border">USER</span>';
+                    statusCell.innerHTML = newStatus;
+                    
+                    // Update the button text
+                    const button = document.querySelector(`#user-row-${userId} button[onclick*="toggleAdmin"]`);
+                    button.textContent = data.is_admin ? 'REMOVE ADMIN' : 'MAKE ADMIN';
+                    button.setAttribute('onclick', `toggleAdmin(${userId}, ${data.is_admin})`);
+                    
+                    location.reload(); // Reload to show flash message
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating user privileges.');
+            });
+        }
+    }
+
+    function deleteUser(userId, username) {
+        if (confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone and will also delete all their ideas.`)) {
+            fetch(`{{ url_for('admin.delete_user', user_id=0) }}`.replace('0', userId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`user-row-${userId}`).remove();
+                    location.reload(); // Reload to show flash message and update stats
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the user.');
+            });
+        }
+    }
+</script>
+{% endblock %}

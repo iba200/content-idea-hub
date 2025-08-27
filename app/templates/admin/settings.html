@@ -1,0 +1,323 @@
+<!-- app/templates/admin/settings.html -->
+{% extends "admin/base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-wireframe-800 mb-2">SYSTEM SETTINGS</h2>
+    <p class="text-wireframe-600">Configure application settings and preferences</p>
+</div>
+
+<form method="POST" class="space-y-8">
+    <!-- General Settings -->
+    <div class="wireframe-border bg-white rounded-lg">
+        <div class="p-6 border-b border-wireframe-200">
+            <h3 class="text-lg font-bold text-wireframe-800">GENERAL CONFIGURATION</h3>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-wireframe-700 mb-2">Site Name</label>
+                    <input type="text" name="site_name" value="Content Idea Hub" 
+                           class="w-full px-3 py-2 wireframe-border text-wireframe-800">
+                    <p class="text-xs text-wireframe-500 mt-1">The name displayed in the header</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-wireframe-700 mb-2">Site Description</label>
+                    <input type="text" name="site_description" value="Manage your content ideas efficiently" 
+                           class="w-full px-3 py-2 wireframe-border text-wireframe-800">
+                    <p class="text-xs text-wireframe-500 mt-1">Brief description of your site</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-wireframe-700 mb-2">Items per Page</label>
+                    <select name="items_per_page" class="w-full px-3 py-2 wireframe-border text-wireframe-800">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <p class="text-xs text-wireframe-500 mt-1">Number of items to display per page</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-wireframe-700 mb-2">Default Timezone</label>
+                    <select name="timezone" class="w-full px-3 py-2 wireframe-border text-wireframe-800">
+                        <option value="UTC">UTC</option>
+                        <option value="Europe/Paris" selected>Europe/Paris</option>
+                        <option value="America/New_York">America/New_York</option>
+                        <option value="Asia/Tokyo">Asia/Tokyo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Settings -->
+    <div class="wireframe-border bg-white rounded-lg">
+        <div class="p-6 border-b border-wireframe-200">
+            <h3 class="text-lg font-bold text-wireframe-800">USER MANAGEMENT</h3>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="allow_registration" name="allow_registration" checked 
+                       class="wireframe-border">
+                <label for="allow_registration" class="text-sm font-medium text-wireframe-700">
+                    Allow new user registration
+                </label>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="require_email_verification" name="require_email_verification" 
+                       class="wireframe-border">
+                <label for="require_email_verification" class="text-sm font-medium text-wireframe-700">
+                    Require email verification for new accounts
+                </label>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="auto_approve_ideas" name="auto_approve_ideas" checked 
+                       class="wireframe-border">
+                <label for="auto_approve_ideas" class="text-sm font-medium text-wireframe-700">
+                    Auto-approve new ideas
+                </label>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-wireframe-700 mb-2">Maximum ideas per user</label>
+                <input type="number" name="max_ideas_per_user" value="100" min="1" 
+                       class="w-32 px-3 py-2 wireframe-border text-wireframe-800">
+                <p class="text-xs text-wireframe-500 mt-1">Set to 0 for unlimited</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="wireframe-border bg-white rounded-lg">
+        <div class="p-6 border-b border-wireframe-200">
+            <h3 class="text-lg font-bold text-wireframe-800">SECURITY & PRIVACY</h3>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="enable_2fa" name="enable_2fa" 
+                       class="wireframe-border">
+                <label for="enable_2fa" class="text-sm font-medium text-wireframe-700">
+                    Enable Two-Factor Authentication
+                </label>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="log_user_activity" name="log_user_activity" checked 
+                       class="wireframe-border">
+                <label for="log_user_activity" class="text-sm font-medium text-wireframe-700">
+                    Log user activity
+                </label>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-wireframe-700 mb-2">Session timeout (minutes)</label>
+                <input type="number" name="session_timeout" value="30" min="5" max="1440" 
+                       class="w-32 px-3 py-2 wireframe-border text-wireframe-800">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-wireframe-700 mb-2">Password minimum length</label>
+                <input type="number" name="password_min_length" value="8" min="6" max="50" 
+                       class="w-32 px-3 py-2 wireframe-border text-wireframe-800">
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="wireframe-border bg-white rounded-lg">
+        <div class="p-6 border-b border-wireframe-200">
+            <h3 class="text-lg font-bold text-wireframe-800">NOTIFICATIONS</h3>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="email_notifications" name="email_notifications" checked 
+                       class="wireframe-border">
+                <label for="email_notifications" class="text-sm font-medium text-wireframe-700">
+                    Send email notifications
+                </label>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="admin_alerts" name="admin_alerts" checked 
+                       class="wireframe-border">
+                <label for="admin_alerts" class="text-sm font-medium text-wireframe-700">
+                    Admin alerts for new users/ideas
+                </label>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-wireframe-700 mb-2">Admin Email</label>
+                <input type="email" name="admin_email" value="admin@contentideahub.com" 
+                       class="w-full max-w-md px-3 py-2 wireframe-border text-wireframe-800">
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup & Maintenance -->
+    <div class="wireframe-border bg-white rounded-lg">
+        <div class="p-6 border-b border-wireframe-200">
+            <h3 class="text-lg font-bold text-wireframe-800">BACKUP & MAINTENANCE</h3>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="auto_backup" name="auto_backup" checked 
+                       class="wireframe-border">
+                <label for="auto_backup" class="text-sm font-medium text-wireframe-700">
+                    Enable automatic backups
+                </label>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-wireframe-700 mb-2">Backup frequency</label>
+                <select name="backup_frequency" class="w-48 px-3 py-2 wireframe-border text-wireframe-800">
+                    <option value="daily" selected>Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="button" onclick="createBackup()" 
+                        class="px-4 py-2 bg-wireframe-600 text-white text-sm font-medium hover:bg-wireframe-700 wireframe-border">
+                    CREATE BACKUP NOW
+                </button>
+                <button type="button" onclick="showMaintenanceMode()" 
+                        class="px-4 py-2 bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 wireframe-border">
+                    MAINTENANCE MODE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Information -->
+    <div class="wireframe-border bg-white rounded-lg">
+        <div class="p-6 border-b border-wireframe-200">
+            <h3 class="text-lg font-bold text-wireframe-800">SYSTEM INFORMATION</h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center p-4 bg-wireframe-50 wireframe-border">
+                    <div class="text-sm text-wireframe-600">Version</div>
+                    <div class="text-lg font-bold text-wireframe-800">v1.2.0</div>
+                </div>
+                <div class="text-center p-4 bg-wireframe-50 wireframe-border">
+                    <div class="text-sm text-wireframe-600">Database</div>
+                    <div class="text-lg font-bold text-wireframe-800">SQLite</div>
+                </div>
+                <div class="text-center p-4 bg-wireframe-50 wireframe-border">
+                    <div class="text-sm text-wireframe-600">Python</div>
+                    <div class="text-lg font-bold text-wireframe-800">3.9.7</div>
+                </div>
+                <div class="text-center p-4 bg-wireframe-50 wireframe-border">
+                    <div class="text-sm text-wireframe-600">Uptime</div>
+                    <div class="text-lg font-bold text-wireframe-800">5d 12h</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="flex justify-end space-x-4">
+        <button type="button" onclick="resetSettings()" 
+                class="px-6 py-3 bg-wireframe-200 text-wireframe-800 font-medium hover:bg-wireframe-300 wireframe-border">
+            RESET TO DEFAULT
+        </button>
+        <button type="submit" 
+                class="px-6 py-3 bg-wireframe-800 text-white font-medium hover:bg-wireframe-700 wireframe-border">
+            SAVE SETTINGS
+        </button>
+    </div>
+</form>
+
+<!-- Maintenance Mode Modal -->
+<div id="maintenanceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white wireframe-border rounded-lg max-w-md w-full">
+            <div class="p-6 border-b border-wireframe-200">
+                <h3 class="text-lg font-bold text-wireframe-800">Maintenance Mode</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-wireframe-600 mb-4">
+                    Enabling maintenance mode will make the site unavailable to regular users. 
+                    Only administrators will be able to access the system.
+                </p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-wireframe-700 mb-2">Maintenance message</label>
+                        <textarea id="maintenanceMessage" rows="3" 
+                                  class="w-full px-3 py-2 wireframe-border text-wireframe-800"
+                                  placeholder="We're performing scheduled maintenance..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-wireframe-700 mb-2">Expected duration (hours)</label>
+                        <input type="number" id="maintenanceDuration" value="2" min="1" 
+                               class="w-24 px-3 py-2 wireframe-border text-wireframe-800">
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-wireframe-200 flex justify-end space-x-2">
+                <button onclick="closeMaintenanceModal()" 
+                        class="px-4 py-2 bg-wireframe-200 text-wireframe-800 font-medium hover:bg-wireframe-300 wireframe-border">
+                    CANCEL
+                </button>
+                <button onclick="enableMaintenanceMode()" 
+                        class="px-4 py-2 bg-orange-600 text-white font-medium hover:bg-orange-700 wireframe-border">
+                    ENABLE MAINTENANCE
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function createBackup() {
+        const button = event.target;
+        const originalText = button.textContent;
+        
+        button.textContent = 'CREATING BACKUP...';
+        button.disabled = true;
+        
+        // Simulate backup creation
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+            
+            showNotification('Backup created successfully', 'success');
+        }, 3000);
+    }
+    
+    function showMaintenanceMode() {
+        document.getElementById('maintenanceModal').classList.remove('hidden');
+    }
+    
+    function closeMaintenanceModal() {
+        document.getElementById('maintenanceModal').classList.add('hidden');
+    }
+    
+    function enableMaintenanceMode() {
+        const message = document.getElementById('maintenanceMessage').value;
+        const duration = document.getElementById('maintenanceDuration').value;
+        
+        if (confirm(`Are you sure you want to enable maintenance mode for ${duration} hours?`)) {
+            // In a real implementation, you would send this to your backend
+            console.log('Maintenance mode enabled:', { message, duration });
+            
+            closeMaintenanceModal();
+            showNotification('Maintenance mode enabled', 'warning');
+        }
+    }
+
+</script>
+
+{% endblock %}

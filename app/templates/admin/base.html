@@ -1,0 +1,224 @@
+<!-- app/templates/admin/base.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %} - Content Idea Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wireframe: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .wireframe-border {
+            border: 2px solid #e2e8f0;
+            position: relative;
+        }
+        .wireframe-border::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 1px solid #cbd5e1;
+            pointer-events: none;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .metric-card:hover {
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -8px rgba(0,0,0,0.1);
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color: #f1f5f9;
+            border-left-color: #64748b;
+        }
+    </style>
+</head>
+<body class="bg-wireframe-50 min-h-screen font-mono">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-4 right-4 z-50 space-y-2">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} px-4 py-3 rounded-lg wireframe-border bg-white shadow-lg max-w-md">
+                        <div class="flex items-center">
+                            <span class="mr-2">
+                                {% if category == 'success' %}✅
+                                {% elif category == 'danger' %}❌
+                                {% elif category == 'warning' %}⚠️
+                                {% else %}ℹ️
+                                {% endif %}
+                            </span>
+                            <span class="text-sm text-wireframe-800">{{ message }}</span>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-wireframe-400 hover:text-wireframe-600">×</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Header -->
+    <header class="wireframe-border bg-white shadow-sm">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 bg-wireframe-800 flex items-center justify-center text-white font-bold text-sm">
+                        A
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-wireframe-800">ADMIN DASHBOARD</h1>
+                        <p class="text-sm text-wireframe-500">Content Idea Hub Management</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-wireframe-800">{{ current_user.username }}</p>
+                        <p class="text-xs text-wireframe-500">Administrator</p>
+                    </div>
+                    <a href="{{ url_for('main.index') }}" class="w-8 h-8 bg-wireframe-200 wireframe-border flex items-center justify-center hover:bg-wireframe-300 transition-colors" title="Retour au site">
+                        <span class="text-wireframe-700">🏠</span>
+                    </a>
+                    <a href="{{ url_for('main.logout') }}" class="w-8 h-8 bg-wireframe-200 wireframe-border flex items-center justify-center hover:bg-wireframe-300 transition-colors" title="Déconnexion">
+                        <span class="text-wireframe-700">🚪</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white wireframe-border min-h-screen">
+            <nav class="p-4">
+                <ul class="space-y-1">
+                    <li>
+                        <a href="{{ url_for('admin.dashboard') }}" class="nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %} flex items-center px-4 py-3 text-sm font-medium text-wireframe-700">
+                            <span class="mr-3">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.users_management') }}" class="nav-item {% if request.endpoint == 'admin.users_management' %}active{% endif %} flex items-center px-4 py-3 text-sm font-medium text-wireframe-700">
+                            <span class="mr-3">👥</span>
+                            Users Management
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.ideas_management') }}" class="nav-item {% if request.endpoint == 'admin.ideas_management' %}active{% endif %} flex items-center px-4 py-3 text-sm font-medium text-wireframe-700">
+                            <span class="mr-3">💡</span>
+                            Ideas Management
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.analytics') }}" class="nav-item {% if request.endpoint == 'admin.analytics' %}active{% endif %} flex items-center px-4 py-3 text-sm font-medium text-wireframe-700">
+                            <span class="mr-3">📈</span>
+                            Analytics
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.settings') }}" class="nav-item {% if request.endpoint == 'admin.settings' %}active{% endif %} flex items-center px-4 py-3 text-sm font-medium text-wireframe-700">
+                            <span class="mr-3">⚙️</span>
+                            Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.system_logs') }}" class="nav-item {% if request.endpoint == 'admin.system_logs' %}active{% endif %} flex items-center px-4 py-3 text-sm font-medium text-wireframe-700">
+                            <span class="mr-3">📋</span>
+                            System Logs
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- JavaScript Global -->
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateX(100%)';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+
+        // AJAX Helper functions
+        function sendAjaxRequest(url, method = 'POST', data = {}) {
+            return fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content')
+                },
+                body: method !== 'GET' ? JSON.stringify(data) : null
+            });
+        }
+
+        // Confirmation modal for destructive actions
+        function confirmAction(message, callback) {
+            if (confirm(message)) {
+                callback();
+            }
+        }
+
+        // Real-time stats update (optional)
+        function updateDashboardStats() {
+            fetch('{{ url_for("admin.dashboard_stats") }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Update dashboard metrics if on dashboard page
+                    if (document.getElementById('total-users')) {
+                        document.getElementById('total-users').textContent = data.total_users;
+                        document.getElementById('total-ideas').textContent = data.total_ideas;
+                        document.getElementById('active-users').textContent = data.active_users;
+                    }
+                })
+                .catch(error => console.log('Stats update failed:', error));
+        }
+
+        // Update stats every 30 seconds if on dashboard
+        if (window.location.pathname.includes('/admin')) {
+            setInterval(updateDashboardStats, 30000);
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

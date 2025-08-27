@@ -13,7 +13,9 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     ideas = db.relationship('Idea', backref='author', lazy=True)
-
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_admin = db.Column(db.Boolean, default=False)
+    
     def set_password(self, password):
         """
         configuer le mot de passe en *hashant*

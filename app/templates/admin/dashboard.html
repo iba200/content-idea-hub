@@ -1,0 +1,228 @@
+<!-- app/templates/admin/dashboard.html -->
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-wireframe-800 mb-2">SYSTEM OVERVIEW</h2>
+    <p class="text-wireframe-600">Real-time metrics and system status</p>
+</div>
+
+<!-- Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-blue-100 wireframe-border flex items-center justify-center">
+                <span class="text-blue-600">👥</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">USERS</span>
+        </div>
+        <div id="total-users" class="text-2xl font-bold text-wireframe-800 mb-1">{{ total_users }}</div>
+        <div class="text-sm text-green-600">↗ +{{ user_growth }}% this month</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-purple-100 wireframe-border flex items-center justify-center">
+                <span class="text-purple-600">💡</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">IDEAS</span>
+        </div>
+        <div id="total-ideas" class="text-2xl font-bold text-wireframe-800 mb-1">{{ total_ideas }}</div>
+        <div class="text-sm text-green-600">↗ Total ideas created</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-orange-100 wireframe-border flex items-center justify-center">
+                <span class="text-orange-600">📊</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">ACTIVE</span>
+        </div>
+        <div id="active-users" class="text-2xl font-bold text-wireframe-800 mb-1">{{ active_users }}</div>
+        <div class="text-sm text-blue-600">→ Active this month</div>
+    </div>
+
+    <div class="metric-card p-6 rounded-lg">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 bg-green-100 wireframe-border flex items-center justify-center">
+                <span class="text-green-600">📈</span>
+            </div>
+            <span class="text-xs text-wireframe-500 bg-wireframe-100 px-2 py-1">ENGAGEMENT</span>
+        </div>
+        <div class="text-2xl font-bold text-wireframe-800 mb-1">{{ engagement_rate }}%</div>
+        <div class="text-sm text-green-600">↗ Publication rate</div>
+    </div>
+</div>
+
+<!-- Status Overview -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="wireframe-border bg-white p-6 rounded-lg">
+        <h3 class="text-lg font-bold text-wireframe-800 mb-4">IDEAS BY STATUS</h3>
+        <div class="space-y-3">
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-wireframe-600">Draft</span>
+                <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 wireframe-border">
+                    {{ ideas_by_status.get('Draft', 0) }}
+                </span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-wireframe-600">To Film</span>
+                <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 wireframe-border">
+                    {{ ideas_by_status.get('To Film', 0) }}
+                </span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-wireframe-600">Published</span>
+                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 wireframe-border">
+                    {{ ideas_by_status.get('Published', 0) }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="wireframe-border bg-white p-6 rounded-lg">
+        <h3 class="text-lg font-bold text-wireframe-800 mb-4">RECENT USERS</h3>
+        <div class="space-y-3">
+            {% for user in recent_users %}
+            <div class="flex items-center space-x-3">
+                <div class="w-6 h-6 bg-wireframe-300 wireframe-border flex items-center justify-center text-xs font-bold">
+                    {{ user.username[0]|upper }}
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-wireframe-800">{{ user.username }}</p>
+                    <p class="text-xs text-wireframe-500">{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                {% if user.is_admin %}
+                <span class="px-2 py-1 text-xs bg-red-100 text-red-800 wireframe-border">ADMIN</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="wireframe-border bg-white p-6 rounded-lg">
+        <h3 class="text-lg font-bold text-wireframe-800 mb-4">SYSTEM STATUS</h3>
+        <div class="space-y-3">
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-wireframe-600">Database</span>
+                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-wireframe-600">API Status</span>
+                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-wireframe-600">Storage</span>
+                <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-wireframe-600">Cache</span>
+                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="wireframe-border bg-white rounded-lg">
+    <div class="p-6 border-b border-wireframe-200">
+        <h3 class="text-lg font-bold text-wireframe-800">RECENT ACTIVITY</h3>
+    </div>
+    <div class="p-6">
+        <div class="space-y-4">
+            {% for idea in recent_ideas %}
+            <div class="flex items-center justify-between p-4 bg-wireframe-50 wireframe-border">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-purple-100 wireframe-border flex items-center justify-center">
+                        <span class="text-purple-600 text-sm">💡</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-wireframe-800">{{ idea.title }}</p>
+                        <p class="text-xs text-wireframe-500">
+                            by {{ idea.author.username }} • {{ idea.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-2 py-1 text-xs 
+                        {% if idea.status == 'Draft' %}bg-yellow-100 text-yellow-800
+                        {% elif idea.status == 'Published' %}bg-green-100 text-green-800
+                        {% elif idea.status == 'To Film' %}bg-blue-100 text-blue-800
+                        {% endif %} wireframe-border">
+                        {{ idea.status }}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if not recent_ideas %}
+            <div class="text-center py-8 text-wireframe-500">
+                <p>No recent activity</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="fixed bottom-6 right-6">
+    <div class="flex flex-col space-y-2">
+        <a href="{{ url_for('admin.users_management') }}" 
+           class="w-12 h-12 bg-wireframe-800 text-white wireframe-border flex items-center justify-center hover:bg-wireframe-700 transition-colors"
+           title="Manage Users">
+            👥
+        </a>
+        <a href="{{ url_for('admin.ideas_management') }}" 
+           class="w-12 h-12 bg-wireframe-800 text-white wireframe-border flex items-center justify-center hover:bg-wireframe-700 transition-colors"
+           title="Manage Ideas">
+            💡
+        </a>
+        <a href="{{ url_for('admin.analytics') }}" 
+           class="w-12 h-12 bg-wireframe-800 text-white wireframe-border flex items-center justify-center hover:bg-wireframe-700 transition-colors"
+           title="View Analytics">
+            📊
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Real-time updates for dashboard metrics
+    function refreshDashboardData() {
+        fetch('{{ url_for("admin.dashboard_stats") }}')
+            .then(response => response.json())
+            .then(data => {
+                // Update metrics
+                document.getElementById('total-users').textContent = data.total_users;
+                document.getElementById('total-ideas').textContent = data.total_ideas;
+                document.getElementById('active-users').textContent = data.active_users;
+                
+                // Update timestamp
+                const now = new Date().toLocaleTimeString();
+                console.log(`Dashboard updated at ${now}`);
+            })
+            .catch(error => console.log('Dashboard refresh failed:', error));
+    }
+
+    // Refresh data every 30 seconds
+    setInterval(refreshDashboardData, 30000);
+
+    // Add visual feedback for system status
+    document.querySelectorAll('.bg-green-500, .bg-yellow-500, .bg-red-500').forEach(indicator => {
+        indicator.style.animation = 'pulse 2s infinite';
+    });
+
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

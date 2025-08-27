@@ -1,0 +1,9 @@
+<header class="bg-white border-b border-gray-300 p-4">
+    <div class="flex justify-between items-center">
+        <h1 class="text-xl font-semibold text-gray-800">Administration</h1>
+        <div>
+            <span class="text-gray-600">Connecté en tant que {{ current_user.username }}</span>
+            <a href="{{ url_for('main.logout') }}" class="ml-4 text-blue-500 hover:underline">Déconnexion</a>
+        </div>
+    </div>
+</header>
