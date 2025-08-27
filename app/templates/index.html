@@ -57,7 +57,8 @@
 <!-- Ideas Grid -->
 <div class="space-y-4">
     {% for idea in ideas %}
-    <div class="bg-white border-2 border-wire-border rounded-lg p-6 hover:border-wire-accent transition-colors">
+    <div class="bg-white border-2 border-wire-border rounded-lg p-6 hover:border-wire-accent transition-colors cursor-pointer idea-card" 
+         onclick="openModal('{{ idea.id }}', '{{ idea.title|e }}', '{{ idea.description|e }}', '{{ idea.tags|e }}', '{{ idea.status|e }}', '{{ idea.timestamp.strftime('%B %d, %Y at %H:%M') }}')">
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0">
             <!-- Content -->
             <div class="flex-1 lg:pr-6">
@@ -88,7 +89,7 @@
             </div>
             
             <!-- Actions -->
-            <div class="flex flex-row lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2">
+            <div class="flex flex-row lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2" onclick="event.stopPropagation()">
                 <a href="{{ url_for('main.edit_idea', id=idea.id) }}" class="flex items-center justify-center w-8 h-8 border-2 border-blue-300 text-blue-600 rounded hover:bg-blue-50 transition-colors">
                     <i class="fas fa-edit text-xs"></i>
                 </a>
@@ -150,5 +151,146 @@
     </nav>
 </div>
 {% endif %}
+
+<!-- Modal -->
+<div id="ideaModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg border-2 border-wire-border max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b-2 border-wire-border">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-wire-accent bg-opacity-10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-lightbulb text-wire-accent"></i>
+                </div>
+                <h2 id="modalTitle" class="text-xl font-bold text-wire-text"></h2>
+            </div>
+            <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Content -->
+        <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <!-- Status Badge -->
+            <div class="mb-6">
+                <div class="inline-flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-600">Status:</span>
+                    <div id="modalStatus" class="px-3 py-1 border-2 border-gray-300 rounded-full text-xs font-medium text-gray-600"></div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="mb-6">
+                <h3 class="text-sm font-semibold text-wire-text mb-3 uppercase tracking-wide">Description</h3>
+                <div id="modalDescription" class="text-gray-700 leading-relaxed whitespace-pre-wrap bg-gray-50 border-2 border-gray-200 rounded-lg p-4 min-h-[120px]"></div>
+            </div>
+            
+            <!-- Tags -->
+            <div class="mb-6">
+                <h3 class="text-sm font-semibold text-wire-text mb-3 uppercase tracking-wide">Tags</h3>
+                <div id="modalTags" class="flex flex-wrap gap-2"></div>
+            </div>
+            
+            <!-- Timestamp -->
+            <div class="mb-6">
+                <h3 class="text-sm font-semibold text-wire-text mb-3 uppercase tracking-wide">Created</h3>
+                <div class="flex items-center space-x-2 text-gray-600">
+                    <i class="fas fa-calendar-alt text-sm"></i>
+                    <span id="modalTimestamp"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-between p-6 border-t-2 border-wire-border bg-gray-50">
+            <button onclick="closeModal()" class="px-4 py-2 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                Close
+            </button>
+            <div class="flex space-x-3">
+                <button id="modalEditBtn" class="px-4 py-2 border-2 border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-edit text-sm"></i>
+                    <span>Edit</span>
+                </button>
+                <button id="modalDuplicateBtn" class="px-4 py-2 border-2 border-green-300 text-green-600 rounded-lg hover:bg-green-50 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-copy text-sm"></i>
+                    <span>Duplicate</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// URL templates pour les actions
+const editUrlTemplate = "{{ url_for('main.edit_idea', id=0) }}".replace('0', 'PLACEHOLDER_ID');
+const duplicateUrlTemplate = "{{ url_for('main.duplicate_idea', id=0) }}".replace('0', 'PLACEHOLDER_ID');
+
+function openModal(id, title, description, tags, status, timestamp) {
+    // Set modal content
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDescription').textContent = description || 'No description provided.';
+    document.getElementById('modalStatus').textContent = status;
+    document.getElementById('modalTimestamp').textContent = timestamp;
+    
+    // Handle tags
+    const tagsContainer = document.getElementById('modalTags');
+    tagsContainer.innerHTML = '';
+    
+    if (tags && tags.trim()) {
+        const tagList = tags.split(',');
+        tagList.forEach(tag => {
+            if (tag.trim()) {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'px-3 py-1 bg-blue-100 border-2 border-blue-300 rounded-full text-sm font-medium text-blue-700';
+                tagElement.textContent = '#' + tag.trim();
+                tagsContainer.appendChild(tagElement);
+            }
+        });
+    } else {
+        const noTagsElement = document.createElement('span');
+        noTagsElement.className = 'text-gray-500 italic';
+        noTagsElement.textContent = 'No tags assigned';
+        tagsContainer.appendChild(noTagsElement);
+    }
+    
+    // Set up action buttons
+    const editBtn = document.getElementById('modalEditBtn');
+    const duplicateBtn = document.getElementById('modalDuplicateBtn');
+    
+    editBtn.onclick = () => {
+        window.location.href = editUrlTemplate.replace('PLACEHOLDER_ID', id);
+    };
+    
+    duplicateBtn.onclick = () => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = duplicateUrlTemplate.replace('PLACEHOLDER_ID', id);
+        document.body.appendChild(form);
+        form.submit();
+    };
+    
+    // Show modal
+    document.getElementById('ideaModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('ideaModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('ideaModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
 
 {% endblock %}

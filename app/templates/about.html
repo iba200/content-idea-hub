@@ -45,6 +45,19 @@
     </div>
 </div>
 
+<!-- Story Section -->
+<div class="bg-gradient-to-r from-gray-50 to-blue-50 border-2 border-gray-200 rounded-lg p-8 mb-8">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl font-bold text-wire-text mb-6">Our Story</h2>
+        <p class="text-gray-700 text-lg leading-relaxed mb-4">
+            ContentHub was born from a simple frustration: the struggle of managing creative ideas scattered across notebooks, sticky notes, and various apps. As content creators ourselves, we understood the pain of losing brilliant ideas or struggling to organize thoughts into actionable content strategies.
+        </p>
+        <p class="text-gray-700 leading-relaxed">
+            We believe that creativity should flow freely, not be hindered by poor organization. That's why we built ContentHub - to be the bridge between inspiration and execution, helping creators turn their scattered thoughts into structured, successful content.
+        </p>
+    </div>
+</div>
+
 <!-- Features Section -->
 <div class="mb-8">
     <h2 class="text-2xl font-bold text-wire-text mb-8 text-center">Why Choose ContentHub?</h2>
@@ -123,6 +136,97 @@
     </div>
 </div>
 
+<!-- Team Section -->
+<div class="bg-white border-2 border-wire-border rounded-lg p-8 mb-8">
+    <h2 class="text-2xl font-bold text-wire-text mb-8 text-center">Meet the Creator</h2>
+    <div class="max-w-4xl mx-auto">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
+            <!-- Photo placeholder - vous pouvez remplacer par une vraie photo -->
+            <div class="flex-shrink-0">
+                <!-- <div class="w-32 h-32 bg-gradient-to-br from-wire-accent to-purple-600 rounded-full border-4 border-wire-accent flex items-center justify-center">
+                    <i class="fas fa-user text-4xl text-white"></i>
+                </div> -->
+                <img src="{{ url_for('static', filename='images/creator-photo.jpg') }}" 
+                     alt="Creator Photo" 
+                     class="w-32 h-32 rounded-full border-4 border-wire-accent object-cover">
+               
+            </div>
+            
+            <div class="flex-1 text-center lg:text-left">
+                <h3 class="text-xl font-bold text-wire-text mb-2">Ibrahima Thiongane</h3>
+                <p class="text-wire-accent font-medium mb-4">Founder & Developer</p>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Passionate about helping content creators succeed, I'm a backend developer junior with over 4 years of experience building web applications. As a content creator myself, I understand the challenges of managing ideas and staying organized in the creative process.
+                </p>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    When I'm not coding, you can find me creating content, exploring new technologies, or brainstorming the next feature that will make ContentHub even better for our amazing community of creators.
+                </p>
+                
+                <!-- Social Links -->
+                <div class="flex justify-center lg:justify-start space-x-4">
+                    <a href="#" target="_blank" class="w-10 h-10 bg-blue-100 border-2 border-blue-300 rounded-lg flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://github.com/iba200" target="_blank" class="w-10 h-10 bg-gray-100 border-2 border-gray-300 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/ibrahim-thiongan-813758276/" target="_blank" class="w-10 h-10 bg-blue-100 border-2 border-blue-300 rounded-lg flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="ibrahimathiongane2006@gmail.com" target="_blank" class="w-10 h-10 bg-red-100 border-2 border-red-300 rounded-lg flex items-center justify-center text-red-600 hover:bg-red-200 transition-colors">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mission Statement -->
+        <div class="mt-8 p-6 bg-gray-50 border-2 border-gray-200 rounded-lg">
+            <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 bg-wire-accent bg-opacity-10 border-2 border-wire-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-quote-left text-wire-accent"></i>
+                </div>
+                <div>
+                    <p class="text-gray-700 italic text-lg leading-relaxed">
+                        "My goal is simple: to create tools that eliminate the friction between having a great idea and turning it into great content. Every feature in ContentHub is designed with real creators in mind, because I believe that when creativity flows freely, amazing things happen."
+                    </p>
+                    <p class="text-wire-accent font-medium mt-3">- Ibrahima Thiongane, Founder</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Values Section -->
+<div class="bg-gradient-to-r from-wire-accent to-purple-600 border-2 border-wire-accent rounded-lg p-8 mb-8 text-white">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl font-bold mb-6">Our Values</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <div class="w-16 h-16 mx-auto bg-white bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-heart text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-3">Creator-First</h3>
+                <p class="text-sm opacity-90">Every decision is made with creators' needs in mind, ensuring the best possible experience.</p>
+            </div>
+            <div>
+                <div class="w-16 h-16 mx-auto bg-white bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-3">Privacy First</h3>
+                <p class="text-sm opacity-90">Your creative ideas are yours. We protect your data with the highest security standards.</p>
+            </div>
+            <div>
+                <div class="w-16 h-16 mx-auto bg-white bg-opacity-20 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-infinity text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-3">Continuous Innovation</h3>
+                <p class="text-sm opacity-90">We're constantly evolving, adding new features based on creator feedback and emerging trends.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Target Audience Section -->
 <div class="bg-gradient-to-r from-wire-accent to-purple-600 border-2 border-wire-accent rounded-lg p-8 mb-8 text-white">
     <div class="max-w-4xl mx-auto text-center">
@@ -191,6 +295,39 @@
             </div>
             <h3 class="font-medium text-wire-text">Tailwind CSS</h3>
             <p class="text-sm text-gray-600">Modern styling</p>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Section -->
+<div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-8 mb-8">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl font-bold text-wire-text mb-6">Get In Touch</h2>
+        <p class="text-gray-700 mb-6 leading-relaxed">
+            Have questions, suggestions, or just want to say hello? We'd love to hear from you! Your feedback helps us make ContentHub better for everyone.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center">
+                <div class="w-12 h-12 mx-auto bg-blue-100 border-2 border-blue-300 rounded-lg flex items-center justify-center mb-3">
+                    <i class="fas fa-envelope text-blue-600"></i>
+                </div>
+                <h3 class="font-semibold text-wire-text mb-1">Email Us</h3>
+                <p class="text-gray-600 text-sm">ibrahimathiongane2006@gmail.com</p>
+            </div>
+            <div class="text-center">
+                <div class="w-12 h-12 mx-auto bg-green-100 border-2 border-green-300 rounded-lg flex items-center justify-center mb-3">
+                    <i class="fas fa-comments text-green-600"></i>
+                </div>
+                <h3 class="font-semibold text-wire-text mb-1">Feedback</h3>
+                <p class="text-gray-600 text-sm">ibrahimathiongane2006@gmail.com</p>
+            </div>
+            <div class="text-center">
+                <div class="w-12 h-12 mx-auto bg-purple-100 border-2 border-purple-300 rounded-lg flex items-center justify-center mb-3">
+                    <i class="fas fa-life-ring text-purple-600"></i>
+                </div>
+                <h3 class="font-semibold text-wire-text mb-1">Support</h3>
+                <p class="text-gray-600 text-sm">ibrahimathiongane2006@gmail.com</p>
+            </div>
         </div>
     </div>
 </div>
