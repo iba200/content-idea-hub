@@ -3,7 +3,6 @@
 
 {% block content %}
 
-<!-- Header -->
 <div class="mb-8">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
         <div>
@@ -19,7 +18,6 @@
     </div>
 </div>
 
-<!-- Legend -->
 <div class="bg-white border-2 border-wire-border rounded-lg p-4 mb-6">
     <h3 class="font-medium text-wire-text mb-3 flex items-center space-x-2">
         <i class="fas fa-palette text-wire-accent"></i>
@@ -41,19 +39,16 @@
     </div>
 </div>
 
-<!-- Filter Buttons -->
-<div class="mb-4 flex space-x-2">
-    <button onclick="filterEvents('all')" class="px-3 py-1 bg-gray-200 rounded">Tous</button>
+<div class="mb-4 flex flex-wrap gap-2 sm:gap-4">
+    <button onclick="filterEvents('all')" class="px-3 py-1 bg-gray-200 rounded">All</button>
     <button onclick="filterEvents('Draft')" class="px-3 py-1 bg-yellow-400 text-white rounded">Draft</button>
     <button onclick="filterEvents('To Film')" class="px-3 py-1 bg-blue-400 text-white rounded">To Film</button>
     <button onclick="filterEvents('Published')" class="px-3 py-1 bg-green-400 text-white rounded">Published</button>
 </div>
 
-<!-- Calendar Container -->
 <div class="bg-white border-2 border-wire-border rounded-lg shadow-sm">
-    <!-- Calendar Header (Custom) -->
     <div class="border-b-2 border-wire-border p-4">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
                 <button id="prev-btn" class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
                     <i class="fas fa-chevron-left text-sm"></i>
@@ -68,22 +63,19 @@
                     Today
                 </button>
                 <div class="flex border-2 border-wire-border rounded overflow-hidden">
-                    <button id="month-view" class="px-3 py-1 bg-wire-accent text-white text-sm">Month</button>
-                    <button id="week-view" class="px-3 py-1 hover:bg-gray-50 text-sm">Week</button>
-                    <button id="day-view" class="px-3 py-1 hover:bg-gray-50 text-sm">Day</button>
+                    <button id="month-view" class="px-3 py-1 text-sm">Month</button>
+                    <button id="week-view" class="px-3 py-1 text-sm">Week</button>
+                    <button id="day-view" class="px-3 py-1 text-sm">Day</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FullCalendar will render here -->
     <div id="calendar" class="p-4 min-h-[600px]"></div>
 </div>
 
-<!-- Toast Notification -->
 <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50"></div>
 
-<!-- Idea Detail Modal -->
 <div id="idea-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white border-2 border-wire-border rounded-lg max-w-md w-full p-6">
         <div class="flex justify-between items-start mb-4">
@@ -187,16 +179,32 @@ document.addEventListener('DOMContentLoaded', function() {
         {% endfor %}
     ];
 
+    // Determine initial view based on screen size
+    function getInitialView() {
+        if (window.innerWidth < 640) { // Small screens (phones)
+            return 'dayGridMonth';
+        } else if (window.innerWidth < 1024) { // Medium screens (tablets)
+            return 'dayGridMonth';
+        } else { // Large screens (desktops)
+            return 'dayGridMonth';
+        }
+    }
+
+    // Determine aspect ratio based on screen size
+    function getAspectRatio() {
+        return window.innerWidth < 768 ? 1.0 : 1.35;
+    }
+
     try {
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
+            initialView: getInitialView(),
             headerToolbar: false,
             height: 'auto',
             firstDay: 1,
             responsive: true,
-            aspectRatio: window.innerWidth < 768 ? 1.0 : 1.35,
+            aspectRatio: getAspectRatio(),
             editable: true,
-
+            
             events: allEvents,
 
             eventClick: function(info) {
@@ -240,6 +248,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // View buttons
+        const viewButtons = document.querySelectorAll('#month-view, #week-view, #day-view');
+
         document.getElementById('month-view').addEventListener('click', function() {
             calendar.changeView('dayGridMonth');
             setActiveViewButton('month-view');
@@ -254,7 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
             calendar.changeView('timeGridDay');
             setActiveViewButton('day-view');
         });
-
+        
+        // Initial active view button
+        setActiveViewButton(getInitialView().replace('dayGrid', 'day-').replace('timeGrid', 'week-'));
+        
         // Filtrage des événements
         window.filterEvents = function(status) {
             if (status === 'all') {
@@ -381,6 +394,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) {
             this.classList.add('hidden');
         }
+    });
+
+    // Handle responsiveness on resize
+    window.addEventListener('resize', () => {
+        calendar.setOption('aspectRatio', getAspectRatio());
     });
 });
 </script>

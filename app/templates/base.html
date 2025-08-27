@@ -7,9 +7,13 @@
     <title>{% block title %}ContentIdeaHub{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/aee6406d64.js" crossorigin="anonymous"></script>
-    <!-- FullCalendar CSS et JS - Version stable -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.js"></script>
+    <style>
+        .mobile-menu-transition {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -32,11 +36,9 @@
 </head>
 
 <body class="bg-wire-gray text-wire-text font-sans min-h-screen">
-    <div class="flex min-h-screen">
+    <div class="flex flex-col lg:flex-row min-h-screen">
 
-        <!-- Sidebar (Desktop) -->
         <aside class="hidden lg:flex w-64 flex-col bg-white border-r-2 border-wire-border">
-            <!-- Logo -->
             <div class="p-6 border-b-2 border-wire-border">
                 <div class="flex items-center space-x-3">
                     <div
@@ -47,7 +49,6 @@
                 </div>
             </div>
 
-            <!-- Navigation -->
             <nav class="flex-1 p-4 space-y-2">
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('main.index') }}"
@@ -115,7 +116,6 @@
                     FAQ
                 </a>
 
-                <!-- User section -->
                 <div class="mt-8 pt-4 border-t-2 border-wire-border">
                     <div class="flex items-center px-4 py-2 text-sm text-gray-500">
                         <div
@@ -153,84 +153,109 @@
             </nav>
         </aside>
 
-        <!-- Mobile Header -->
-        <div
-            class="lg:hidden w-full bg-white border-b-2 border-wire-border p-4 flex justify-between items-center sticky top-0 z-30">
-            <div class="flex items-center space-x-3">
-                <div
-                    class="w-6 h-6 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
-                    <i class="fas fa-lightbulb text-white text-xs"></i>
-                </div>
-                <span class="text-lg font-bold text-wire-text">ContentHub</span>
-            </div>
-            <button id="menu-toggle"
-                class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors">
-                <i class="fas fa-bars text-sm text-wire-text"></i>
-            </button>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu"
-            class="hidden absolute top-16 left-4 right-4 bg-white border-2 border-wire-border rounded-lg shadow-lg z-20 p-4 lg:hidden">
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('main.index') }}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Dashboard</a>
-            <a href="{{ url_for('main.new_idea') }}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">New Idea</a>
-            <a href="{{ url_for('main.import_ideas') }}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Import</a>
-            <a href="{{ url_for('main.export_ideas') }}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Export</a>
-            <a href="{{ url_for('main.calendar')}}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Calendar</a>
-            <a href="{{ url_for('main.suggest_idea')}}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">AI Suggest</a>
-            <a href="{{ url_for('main.about') }}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">About</a>
-            <a href="{{ url_for('main.faq') }}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">FAQ</a>
-            <a href="{{ url_for('main.logout') }}"
-                class="block py-3 px-4 text-sm hover:bg-red-50 text-red-600">Logout</a>
-            {% else %}
-            <a href="{{ url_for('main.login') }}"
-                class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Login</a>
-            <a href="{{ url_for('main.register') }}" class="block py-3 px-4 text-sm hover:bg-wire-hover">Register</a>
-            {% endif %}
-        </div>
-
-        <!-- Main Content -->
-        <main class="flex-1 p-4 lg:p-8 bg-wire-gray">
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <div class="mb-6 space-y-2">
-                {% for category, message in messages %}
-                <div class="p-4 border-2 rounded-lg flex items-center space-x-3
-                    {% if category == 'success' %} border-green-300 bg-green-50 text-green-800
-                    {% elif category == 'danger' %} border-red-300 bg-red-50 text-red-800
-                    {% else %} border-blue-300 bg-blue-50 text-blue-800 {% endif %}">
+        <div class="flex-1 flex flex-col">
+            <header
+                class="lg:hidden w-full bg-white border-b-2 border-wire-border p-4 flex justify-between items-center sticky top-0 z-30">
+                <div class="flex items-center space-x-3">
                     <div
-                        class="w-6 h-6 border-2 {% if category == 'success' %} border-green-400 {% elif category == 'danger' %} border-red-400 {% else %} border-blue-400 {% endif %} rounded-full flex items-center justify-center">
-                        <i
-                            class="fas {% if category == 'success' %} fa-check {% elif category == 'danger' %} fa-exclamation {% else %} fa-info {% endif %} text-xs"></i>
+                        class="w-6 h-6 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-white text-xs"></i>
                     </div>
-                    <span class="text-sm font-medium">{{ message }}</span>
+                    <span class="text-lg font-bold text-wire-text">ContentHub</span>
                 </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            {% endwith %}
+                <button id="menu-toggle"
+                    class="w-8 h-8 border-2 border-wire-border rounded flex items-center justify-center hover:border-wire-accent transition-colors"
+                    aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <i id="menu-icon" class="fas fa-bars text-sm text-wire-text"></i>
+                </button>
+            </header>
 
-            {% block content %}{% endblock %}
-        </main>
+            <nav id="mobile-menu"
+                class="lg:hidden absolute top-16 left-4 right-4 bg-white border-2 border-wire-border rounded-lg shadow-lg z-20 p-4 transform scale-95 opacity-0 hidden mobile-menu-transition"
+                aria-label="Mobile navigation">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.index') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover rounded-t-lg">Dashboard</a>
+                <a href="{{ url_for('main.new_idea') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">New Idea</a>
+                <a href="{{ url_for('main.import_ideas') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Import</a>
+                <a href="{{ url_for('main.export_ideas') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Export</a>
+                <a href="{{ url_for('main.calendar')}}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Calendar</a>
+                <a href="{{ url_for('main.suggest_idea')}}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">AI Suggest</a>
+                <a href="{{ url_for('main.about') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">About</a>
+                <a href="{{ url_for('main.faq') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">FAQ</a>
+                <a href="{{ url_for('main.logout') }}"
+                    class="block py-3 px-4 text-sm hover:bg-red-50 text-red-600 rounded-b-lg">Logout</a>
+                {% else %}
+                <a href="{{ url_for('main.login') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover rounded-t-lg">Login</a>
+                <a href="{{ url_for('main.register') }}"
+                    class="block py-3 px-4 text-sm hover:bg-wire-hover rounded-b-lg">Register</a>
+                {% endif %}
+            </nav>
+
+            <main class="flex-1 p-4 lg:p-8 bg-wire-gray">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for category, message in messages %}
+                    <div class="p-4 border-2 rounded-lg flex items-center space-x-3
+                        {% if category == 'success' %} border-green-300 bg-green-50 text-green-800
+                        {% elif category == 'danger' %} border-red-300 bg-red-50 text-red-800
+                        {% else %} border-blue-300 bg-blue-50 text-blue-800 {% endif %}">
+                        <div
+                            class="w-6 h-6 border-2 {% if category == 'success' %} border-green-400 {% elif category == 'danger' %} border-red-400 {% else %} border-blue-400 {% endif %} rounded-full flex items-center justify-center">
+                            <i
+                                class="fas {% if category == 'success' %} fa-check {% elif category == 'danger' %} fa-exclamation {% else %} fa-info {% endif %} text-xs"></i>
+                        </div>
+                        <span class="text-sm font-medium">{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
     </div>
 
     <script>
-        document.getElementById("menu-toggle").addEventListener("click", () => {
-            document.getElementById("mobile-menu").classList.toggle("hidden");
+        const menuToggle = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const menuIcon = document.getElementById("menu-icon");
+
+        menuToggle.addEventListener("click", () => {
+            const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
+            menuToggle.setAttribute("aria-expanded", !isExpanded);
+            
+            if (mobileMenu.classList.contains("hidden")) {
+                // Show the menu with a slight delay to allow for the transition
+                mobileMenu.classList.remove("hidden");
+                setTimeout(() => {
+                    mobileMenu.classList.remove("opacity-0", "scale-95");
+                    mobileMenu.classList.add("opacity-100", "scale-100");
+                }, 10);
+                menuIcon.classList.remove("fa-bars");
+                menuIcon.classList.add("fa-times");
+            } else {
+                mobileMenu.classList.remove("opacity-100", "scale-100");
+                mobileMenu.classList.add("opacity-0", "scale-95");
+                // Hide the menu after the transition completes
+                setTimeout(() => {
+                    mobileMenu.classList.add("hidden");
+                }, 300);
+                menuIcon.classList.remove("fa-times");
+                menuIcon.classList.add("fa-bars");
+            }
         });
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/main.min.js"></script>
 </body>
 
 </html>
