@@ -6,7 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="index, follow">
     <meta name="description" content="Ton site de génération d’idées de contenu avec Flask.">
-    <link rel="canonical" href="https://content-idea-hub.up.railway.app/">
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% block og_title %}ContentIdeaHub{% endblock %}">
+    <meta property="og:description"
+        content="{% block og_description %}Ton site de génération d’idées de contenu avec Flask.{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ url_for('static', filename='img/preview.png', _external=True) }}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}ContentIdeaHub{% endblock %}">
+    <meta name="twitter:description"
+        content="{% block twitter_description %}Ton site de génération d’idées de contenu avec Flask.{% endblock %}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='img/preview.png', _external=True) }}">
+    
+    <!-- Favicon & Manifest -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Préconnexion pour performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- <link rel="canonical" href="https://content-idea-hub.up.railway.app/"> -->
+    <link rel="canonical" href="{{ request.url }}">
+
     <title>{% block title %}ContentIdeaHub{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/aee6406d64.js" crossorigin="anonymous"></script>
@@ -286,6 +311,20 @@
             }
         });
     </script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Content Idea Hub",
+            "url": "https://content-idea-hub.up.railway.app/",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://content-idea-hub.up.railway.app/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
+
 </body>
 
 </html>
