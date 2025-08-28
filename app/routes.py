@@ -16,6 +16,11 @@ import markdown
 
 bp = Blueprint('main', __name__)
 
+# ------------------ AUTH ------------------ #
+@bp.route('/google98da10251afd3590.html')
+def google_verification():
+    return send_from_directory('static', 'google98da10251afd3590.html')
+
 
 # ------------------ AUTH ------------------ #
 @bp.route('/register', methods=['GET', 'POST'])
