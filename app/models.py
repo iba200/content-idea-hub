@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128), nullable=False)
     ideas = db.relationship('Idea', backref='author', lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     is_admin = db.Column(db.Boolean, default=False)
     
     def set_password(self, password):
@@ -48,3 +49,11 @@ class Idea(db.Model):
 
     def __repr__(self):
         return f'<Idea {self.title}>'
+
+class Setting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(100), unique=True, nullable=False)
+    value = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f"<Setting {self.key}={self.value}>"

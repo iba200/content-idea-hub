@@ -1,12 +1,18 @@
 # admin_routes.py - À ajouter dans votre dossier app/
-
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
+from sqlalchemy import func
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, send_file
 from flask_login import login_required, current_user
 from functools import wraps
-from datetime import datetime, timedelta
+from datetime import timedelta
+from datetime import datetime
 from sqlalchemy import func
 from app import db
 from app.models import User, Idea
+from flask_paginate import Pagination
+from app.utils.settings_manager import set_setting, get_setting, reset_settings
+
+import io
+import csv
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -178,51 +184,77 @@ def delete_idea(idea_id):
 @login_required
 @admin_required
 def analytics():
-    """Page d'analytics détaillées"""
-    # Données pour les graphiques
-    
-    # Évolution des utilisateurs sur 12 mois
-    months = []
-    user_counts = []
-    for i in range(12, 0, -1):
-        month_start = datetime.utcnow().replace(day=1) - timedelta(days=30*i)
-        month_end = month_start + timedelta(days=30)
-        count = User.query.filter(
-            User.created_at >= month_start,
-            User.created_at < month_end
-        ).count()
-        months.append(month_start.strftime('%b %Y'))
-        user_counts.append(count)
-    
-    # Répartition des idées par catégorie (basé sur les tags)
-    tag_counts = {}
-    ideas_with_tags = Idea.query.filter(Idea.tags.isnot(None)).all()
-    for idea in ideas_with_tags:
+    """Analytics dashboard"""
+
+    # --- Statistiques de base ---
+    total_users = User.query.count()
+    total_ideas = Idea.query.count()
+    published_ideas = Idea.query.filter(Idea.status.ilike("published")).count()
+    active_users = User.query.filter(User.last_seen >= datetime.utcnow() - timedelta(days=7)).count()
+
+    # --- Croissance des utilisateurs par mois ---
+    user_growth = (
+        User.query.with_entities(
+            func.strftime("%Y-%m", User.created_at).label("month"),
+            func.count(User.id)
+        )
+        .group_by("month")
+        .order_by("month")
+        .all()
+    )
+    months = [m for m, _ in user_growth]
+    user_counts = [c for _, c in user_growth]
+
+    # --- Top tags (comme tu stockes dans une string séparée par virgules) ---
+    tags_counter = {}
+    ideas = Idea.query.all()
+    for idea in ideas:
         if idea.tags:
-            tags = [tag.strip().lower() for tag in idea.tags.split(',')]
-            for tag in tags:
-                tag_counts[tag] = tag_counts.get(tag, 0) + 1
-    
-    # Top 5 des tags
-    top_tags = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-    published_ideas = Idea.query.filter_by(status='Published').count()
-    # Activité par jour de la semaine
-    weekday_activity = {}
-    for i in range(7):  # 0 = lundi, 6 = dimanche
-        count = Idea.query.filter(
-            func.extract('dow', Idea.timestamp) == i
-        ).count()
-        weekday_activity[i] = count
-    
-    return render_template('admin/analytics.html',
-                         total_users=User.query.count(),
-                         total_ideas=Idea.query.count(),
-                         published_ideas=published_ideas,
-                         active_users=User.query.filter(User.created_at >= datetime.utcnow() - timedelta(days=30)).count(),
-                         months=months,
-                         user_counts=user_counts,
-                         top_tags=top_tags,
-                         weekday_activity=weekday_activity)
+            for tag in idea.tags.split(","):
+                tag = tag.strip().lower()
+                if tag:
+                    tags_counter[tag] = tags_counter.get(tag, 0) + 1
+
+    # On trie par nombre décroissant
+    top_tags = sorted(tags_counter.items(), key=lambda x: x[1], reverse=True)[:5]
+
+    # --- Activité par jour de la semaine ---
+    weekday_activity = {i: 0 for i in range(7)}  # 0=Monday ... 6=Sunday
+    for idea in ideas:
+        if idea.timestamp:
+            weekday_activity[idea.timestamp.weekday()] += 1
+
+    return render_template(
+        "admin/analytics.html",
+        total_users=total_users,
+        total_ideas=total_ideas,
+        published_ideas=published_ideas,
+        active_users=active_users,
+        months=months,
+        user_counts=user_counts,
+        top_tags=top_tags,
+        weekday_activity=weekday_activity,
+    )
+
+DEFAULT_SETTINGS = {
+    "site_name": "Content Idea Hub",
+    "site_description": "Manage your content ideas efficiently",
+    "items_per_page": "20",
+    "timezone": "UTC",
+    "allow_registration": "on",
+    "require_email_verification": "",
+    "auto_approve_ideas": "on",
+    "max_ideas_per_user": "100",
+    "enable_2fa": "",
+    "log_user_activity": "on",
+    "session_timeout": "30",
+    "password_min_length": "8",
+    "email_notifications": "on",
+    "admin_alerts": "on",
+    "admin_email": "admin@contentideahub.com",
+    "auto_backup": "on",
+    "backup_frequency": "daily",
+}
 
 @admin_bp.route('/settings', methods=['GET', 'POST'])
 @login_required
@@ -230,39 +262,127 @@ def analytics():
 def settings():
     """Paramètres du système"""
     if request.method == 'POST':
-        # Ici vous pouvez implémenter la sauvegarde des paramètres
-        # dans une table de configuration ou un fichier
-        flash('⚙️ Settings saved successfully', 'success')
+        if "reset" in request.form:
+            reset_settings(DEFAULT_SETTINGS)
+            flash("🔄 Settings reset to default", "info")
+        else:
+            for key in DEFAULT_SETTINGS.keys():
+                value = request.form.get(key, "")
+                set_setting(key, value)
+            flash('⚙️ Settings saved successfully', 'success')
         return redirect(url_for('admin.settings'))
     
-    return render_template('admin/settings.html')
+    # Charger les paramètres depuis la base
+    settings_data = {key: get_setting(key, default) for key, default in DEFAULT_SETTINGS.items()}
+    return render_template('admin/settings.html', settings=settings_data)
 
 @admin_bp.route('/logs')
 @login_required
 @admin_required
 def system_logs():
     """Logs du système"""
-    # Ici vous pourriez implémenter la lecture des logs
-    # depuis un fichier ou une base de données
+    page = request.args.get('page', 1, type=int)
+    level_filter = request.args.get('level', '')
+    search = request.args.get('search', '')
+    
+    # Mock log data (replace with actual log storage in production)
+    logs_data = [
+        {'timestamp': datetime.utcnow() - timedelta(minutes=2), 'level': 'INFO', 'message': f'User login: {current_user.username}'},
+        {'timestamp': datetime.utcnow() - timedelta(minutes=5), 'level': 'DEBUG', 'message': 'Database connection established'},
+        {'timestamp': datetime.utcnow() - timedelta(minutes=8), 'level': 'WARN', 'message': 'High memory usage detected: 85%'},
+        {'timestamp': datetime.utcnow() - timedelta(minutes=10), 'level': 'ERROR', 'message': 'Failed to process request'},
+    ]
+    
+    # Filtering logs
+    filtered_logs = logs_data
+    if level_filter:
+        filtered_logs = [log for log in filtered_logs if log['level'] == level_filter]
+    if search:
+        filtered_logs = [log for log in filtered_logs if search.lower() in log['message'].lower()]
+    
+    # Pagination
+    per_page = 20
+    total = len(filtered_logs)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_logs = filtered_logs[start:end]
+    
+    # logs = Pagination(None, page, per_page, total, paginated_logs)
+    logs = Pagination(page=page, total=total, per_page=per_page, record_name='logs', css_framework='bootstrap4')
+    
+    return render_template('admin/logs.html', 
+                         logs=logs, 
+                         level_filter=level_filter, 
+                         search=search)
+
+@admin_bp.route('/export_logs')
+@login_required
+@admin_required
+def export_logs():
+    """Export logs as CSV"""
+    level_filter = request.args.get('level', '')
+    search = request.args.get('search', '')
+    
+    # Mock log data (replace with actual log storage in production)
+    logs_data = [
+        {'timestamp': datetime.utcnow() - timedelta(minutes=2), 'level': 'INFO', 'message': f'User login: {current_user.username}'},
+        {'timestamp': datetime.utcnow() - timedelta(minutes=5), 'level': 'DEBUG', 'message': 'Database connection established'},
+        {'timestamp': datetime.utcnow() - timedelta(minutes=8), 'level': 'WARN', 'message': 'High memory usage detected: 85%'},
+        {'timestamp': datetime.utcnow() - timedelta(minutes=10), 'level': 'ERROR', 'message': 'Failed to process request'},
+    ]
+    
+    # Filtering logs
+    filtered_logs = logs_data
+    if level_filter:
+        filtered_logs = [log for log in filtered_logs if log['level'] == level_filter]
+    if search:
+        filtered_logs = [log for log in filtered_logs if search.lower() in log['message'].lower()]
+    
+    # Create CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Timestamp', 'Level', 'Message'])
+    for log in filtered_logs:
+        writer.writerow([log['timestamp'].strftime('%Y-%m-%d %H:%M:%S'), log['level'], log['message']])
+    
+    output.seek(0)
+    return send_file(
+        io.BytesIO(output.getvalue().encode('utf-8')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name='system_logs.csv'
+    )
+
+@admin_bp.route('/api/logs')
+@login_required
+@admin_required
+def api_logs():
+    """API pour les logs en temps réel"""
+    # Mock log data (replace with actual log storage in production)
     logs = [
         {
-            'timestamp': datetime.utcnow() - timedelta(minutes=2),
+            'timestamp': (datetime.utcnow() - timedelta(minutes=2)).isoformat(),
             'level': 'INFO',
             'message': f'User login: {current_user.username}'
         },
         {
-            'timestamp': datetime.utcnow() - timedelta(minutes=5),
+            'timestamp': (datetime.utcnow() - timedelta(minutes=5)).isoformat(),
             'level': 'DEBUG',
             'message': 'Database connection established'
         },
         {
-            'timestamp': datetime.utcnow() - timedelta(minutes=8),
+            'timestamp': (datetime.utcnow() - timedelta(minutes=8)).isoformat(),
             'level': 'WARN',
             'message': 'High memory usage detected: 85%'
+        },
+        {
+            'timestamp': (datetime.utcnow() - timedelta(minutes=10)).isoformat(),
+            'level': 'ERROR',
+            'message': 'Failed to process request'
         }
     ]
     
-    return render_template('admin/logs.html', logs=logs)
+    return jsonify({'logs': logs})
 
 # API endpoints pour les données en temps réel
 @admin_bp.route('/api/dashboard/stats')

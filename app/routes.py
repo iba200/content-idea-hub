@@ -8,7 +8,7 @@ from flask import (
 from flask_login import current_user, login_required, login_user, logout_user
 from app import db
 from app.forms import IdeaForm, ImportForm, LoginForm, RegisterForm, SearchForm
-from app.models import Idea, User
+from app.models import Idea, User, Setting
 from flask_paginate import Pagination, get_page_args
 from google import genai
 import markdown
@@ -64,7 +64,8 @@ def logout():
 def index():
     form = SearchForm()
     ideas = Idea.query.filter_by(user_id=current_user.id)
-
+    name_site = Setting.query.get(1)
+    
     # recherche par tags
     if form.validate_on_submit() and form.tags.data:
         tags = [t.strip().lower() for t in form.tags.data.split(',') if t.strip()]
@@ -78,7 +79,7 @@ def index():
     ideas = ideas.order_by(Idea.timestamp.desc()).offset(offset).limit(per_page).all()
     pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap5')
 
-    return render_template('index.html', title='Dashboard', ideas=ideas, form=form, pagination=pagination)
+    return render_template('index.html', title='Dashboard', ideas=ideas, form=form, pagination=pagination, name_site=name_site)
 
 
 # ------------------ IDEAS CRUD ------------------ #
