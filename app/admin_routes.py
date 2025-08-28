@@ -1,6 +1,6 @@
 # admin_routes.py - À ajouter dans votre dossier app/
 from sqlalchemy import func
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, send_file
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, send_file, current_app
 from flask_login import login_required, current_user
 from functools import wraps
 from datetime import timedelta
@@ -78,10 +78,25 @@ def users_management():
     """Gestion des utilisateurs"""
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
+    role = request.args.get('role', '')
+    sort = request.args.get('sort', 'created_desc')
     
     users_query = User.query
     if search:
         users_query = users_query.filter(User.username.contains(search))
+    if role == 'admin':
+        users_query = users_query.filter_by(is_admin=True)
+    elif role == 'user':
+        users_query = users_query.filter_by(is_admin=False)
+
+    if sort == 'created_asc':
+        users_query = users_query.order_by(User.created_at.asc())
+    elif sort == 'name_asc':
+        users_query = users_query.order_by(User.username.asc())
+    elif sort == 'name_desc':
+        users_query = users_query.order_by(User.username.desc())
+    else:
+        users_query = users_query.order_by(User.created_at.desc())
     
     users = users_query.paginate(
         page=page, per_page=20, error_out=False
@@ -99,7 +114,40 @@ def users_management():
     return render_template('admin/users.html', 
                          users=users, 
                          search=search,
-                         user_stats=user_stats)
+                         user_stats=user_stats,
+                         role=role,
+                         sort=sort)
+
+@admin_bp.route('/users/export')
+@login_required
+@admin_required
+def export_users():
+    """Export all users (optionally filtered by search) as CSV"""
+    search = request.args.get('search', '')
+    users_query = User.query
+    if search:
+        users_query = users_query.filter(User.username.contains(search))
+    users = users_query.order_by(User.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Username', 'Is Admin', 'Ideas Count', 'Created At', 'Last Seen'])
+    for u in users:
+        writer.writerow([
+            u.username,
+            'yes' if u.is_admin else 'no',
+            len(u.ideas) if hasattr(u, 'ideas') else 0,
+            u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else '',
+            u.last_seen.strftime('%Y-%m-%d %H:%M') if u.last_seen else ''
+        ])
+
+    output.seek(0)
+    return send_file(
+        io.BytesIO(output.getvalue().encode('utf-8')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name='users.csv'
+    )
 
 @admin_bp.route('/users/<int:user_id>/toggle_admin', methods=['POST'])
 @login_required
@@ -114,6 +162,7 @@ def toggle_admin(user_id):
     db.session.commit()
     
     status = 'granted' if user.is_admin else 'revoked'
+    current_app.logger.info('admin_toggle', extra={'actor': current_user.username, 'target': user.username, 'new_is_admin': user.is_admin})
     flash(f'✅ Admin privileges {status} for {user.username}', 'success')
     
     return jsonify({'success': True, 'is_admin': user.is_admin})
@@ -131,6 +180,7 @@ def delete_user(user_id):
     Idea.query.filter_by(user_id=user_id).delete()
     db.session.delete(user)
     db.session.commit()
+    current_app.logger.warning('admin_delete_user', extra={'actor': current_user.username, 'target': user.username})
     
     flash(f'🗑️ User {user.username} deleted successfully', 'success')
     return jsonify({'success': True})
@@ -149,7 +199,16 @@ def ideas_management():
         ideas_query = ideas_query.filter_by(status=status_filter)
     if search:
         ideas_query = ideas_query.filter(Idea.title.contains(search))
-    
+    sort = request.args.get('sort', 'created_desc')
+    if sort == 'created_asc':
+        ideas_query = ideas_query.order_by(Idea.timestamp.asc())
+    elif sort == 'title_asc':
+        ideas_query = ideas_query.order_by(Idea.title.asc())
+    elif sort == 'title_desc':
+        ideas_query = ideas_query.order_by(Idea.title.desc())
+    else:
+        ideas_query = ideas_query.order_by(Idea.timestamp.desc())
+
     ideas = ideas_query.order_by(Idea.timestamp.desc()).paginate(
         page=page, per_page=20, error_out=False
     )
@@ -166,7 +225,42 @@ def ideas_management():
                          ideas=ideas, 
                          search=search,
                          status_filter=status_filter,
+                         sort=sort,
                          idea_stats=idea_stats)
+
+@admin_bp.route('/ideas/export')
+@login_required
+@admin_required
+def export_ideas_admin():
+    """Export ideas (respecting current filters) as CSV"""
+    status_filter = request.args.get('status', '')
+    search = request.args.get('search', '')
+    ideas_query = Idea.query
+    if status_filter:
+        ideas_query = ideas_query.filter_by(status=status_filter)
+    if search:
+        ideas_query = ideas_query.filter(Idea.title.contains(search))
+    ideas = ideas_query.order_by(Idea.timestamp.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Title', 'Author', 'Status', 'Tags', 'Created At'])
+    for idea in ideas:
+        writer.writerow([
+            idea.title,
+            idea.author.username if idea.author else '',
+            idea.status,
+            idea.tags or '',
+            idea.timestamp.strftime('%Y-%m-%d %H:%M') if idea.timestamp else ''
+        ])
+
+    output.seek(0)
+    return send_file(
+        io.BytesIO(output.getvalue().encode('utf-8')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name='ideas.csv'
+    )
 
 @admin_bp.route('/ideas/<int:idea_id>/delete', methods=['POST'])
 @login_required
@@ -176,6 +270,7 @@ def delete_idea(idea_id):
     idea = Idea.query.get_or_404(idea_id)
     db.session.delete(idea)
     db.session.commit()
+    current_app.logger.info('admin_delete_idea', extra={'actor': current_user.username, 'idea_id': idea_id, 'title': idea.title})
     
     flash(f'🗑️ Idea "{idea.title}" deleted successfully', 'success')
     return jsonify({'success': True})

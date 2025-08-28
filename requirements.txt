@@ -20,6 +20,10 @@ Flask-Migrate==4.1.0
 flask-paginate==2024.4.12
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.2
+Flask-Limiter
+Flask-Mail==3.10.1
+Flask-Talisman==1.1.0
+python-dotenv==1.0.1
 frozenlist==1.7.0
 genai==2.1.0
 google==3.0.0

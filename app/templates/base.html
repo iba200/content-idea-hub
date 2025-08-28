@@ -4,6 +4,34 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="Ton site de génération d’idées de contenu avec Flask.">
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% block og_title %}ContentIdeaHub{% endblock %}">
+    <meta property="og:description"
+        content="{% block og_description %}Ton site de génération d’idées de contenu avec Flask.{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ url_for('static', filename='img/preview.png', _external=True) }}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}ContentIdeaHub{% endblock %}">
+    <meta name="twitter:description"
+        content="{% block twitter_description %}Ton site de génération d’idées de contenu avec Flask.{% endblock %}">
+    <meta name="twitter:image" content="{{ url_for('static', filename='img/preview.png', _external=True) }}">
+    
+    <!-- Favicon & Manifest -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Préconnexion pour performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- <link rel="canonical" href="https://content-idea-hub.up.railway.app/"> -->
+    <link rel="canonical" href="{{ request.url }}">
+
     <title>{% block title %}ContentIdeaHub{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/aee6406d64.js" crossorigin="anonymous"></script>
@@ -45,7 +73,7 @@
                         class="w-8 h-8 bg-wire-accent rounded border-2 border-wire-accent flex items-center justify-center">
                         <i class="fas fa-lightbulb text-white text-sm"></i>
                     </div>
-                    <span class="text-xl font-bold text-wire-text">{{ settings['site_name'] }}</span>
+                    <span class="text-xl font-bold text-wire-text">ContentHub</span>
                 </div>
             </div>
 
@@ -116,21 +144,20 @@
                     FAQ
                 </a>
                 {% if current_user.is_admin %}
-                    <a href="{{ url_for('admin.dashboard') }}"
-                        class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
-                        <div
-                            class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
-                            <i class="fas fa-crown text-xs text-wire-text"></i>
-                        </div>
-                        Admin Dashboard
-                    </a>
+                <a href="{{ url_for('admin.dashboard') }}"
+                    class="flex items-center px-4 py-3 text-sm border-2 border-transparent hover:border-wire-border hover:bg-wire-hover rounded-lg transition-all duration-200 group">
+                    <div
+                        class="w-6 h-6 border-2 border-wire-border rounded mr-3 flex items-center justify-center group-hover:border-wire-accent">
+                        <i class="fas fa-crown text-xs text-wire-text"></i>
+                    </div>
+                    Admin Dashboard
+                </a>
                 {% endif %}
 
                 <div class="mt-8 pt-4 border-t-2 border-wire-border">
                     {% if current_user.is_admin %}
                     <div class="flex items-center px-4 py-2 text-sm text-red-600 font-semibold">
-                        <div
-                            class="w-6 h-6 border-2 border-red-400 rounded-full mr-3 flex items-center justify-center">
+                        <div class="w-6 h-6 border-2 border-red-400 rounded-full mr-3 flex items-center justify-center">
                             <i class="fas fa-shield-alt text-xs"></i>
                         </div>
                         {{ current_user.username }}
@@ -195,7 +222,7 @@
                 class="lg:hidden absolute top-16 left-4 right-4 bg-white border-2 border-wire-border rounded-lg shadow-lg z-20 p-4 transform scale-95 opacity-0 hidden mobile-menu-transition"
                 aria-label="Mobile navigation">
                 {% if current_user.is_authenticated %}
-                
+
                 <a href="{{ url_for('main.index') }}"
                     class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover rounded-t-lg">Dashboard</a>
                 <a href="{{ url_for('main.new_idea') }}"
@@ -213,8 +240,8 @@
                 <a href="{{ url_for('main.faq') }}"
                     class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">FAQ</a>
                 {% if current_user.is_admin %}
-                    <a href="{{ url_for('admin.dashboard') }}"
-                        class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Admin Dashboard</a>
+                <a href="{{ url_for('admin.dashboard') }}"
+                    class="block py-3 px-4 text-sm border-b border-wire-border hover:bg-wire-hover">Admin Dashboard</a>
                 {% endif %}
                 <a href="{{ url_for('main.logout') }}"
                     class="block py-3 px-4 text-sm hover:bg-red-50 text-red-600 rounded-b-lg">Logout</a>
@@ -262,7 +289,7 @@
         menuToggle.addEventListener("click", () => {
             const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
             menuToggle.setAttribute("aria-expanded", !isExpanded);
-            
+
             if (mobileMenu.classList.contains("hidden")) {
                 // Show the menu with a slight delay to allow for the transition
                 mobileMenu.classList.remove("hidden");
@@ -284,6 +311,20 @@
             }
         });
     </script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Content Idea Hub",
+            "url": "https://content-idea-hub.up.railway.app/",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://content-idea-hub.up.railway.app/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
+
 </body>
 
 </html>

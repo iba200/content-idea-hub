@@ -54,10 +54,22 @@
                 <form method="GET" class="flex space-x-2">
                     <input type="text" name="search" value="{{ search }}" placeholder="Search users..." 
                            class="px-3 py-2 wireframe-border text-sm">
+                    <select name="role" class="px-3 py-2 wireframe-border text-sm">
+                        <option value="">All Roles</option>
+                        <option value="admin">Admins</option>
+                        <option value="user">Users</option>
+                    </select>
+                    <select name="sort" class="px-3 py-2 wireframe-border text-sm">
+                        <option value="created_desc">Joined ↓</option>
+                        <option value="created_asc">Joined ↑</option>
+                        <option value="name_asc">Name A-Z</option>
+                        <option value="name_desc">Name Z-A</option>
+                    </select>
                     <button type="submit" class="px-4 py-2 bg-wireframe-800 text-white text-sm font-medium hover:bg-wireframe-700">
                         SEARCH
                     </button>
                 </form>
+                <a href="{{ url_for('admin.export_users', search=search) }}" class="px-4 py-2 bg-wireframe-200 text-wireframe-800 text-sm font-medium hover:bg-wireframe-300 wireframe-border">EXPORT CSV</a>
             </div>
         </div>
     </div>
@@ -169,7 +181,7 @@
             fetch(`{{ url_for('admin.toggle_admin', user_id=0) }}`.replace('0', userId), {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             })
             .then(response => response.json())
@@ -204,7 +216,7 @@
             fetch(`{{ url_for('admin.delete_user', user_id=0) }}`.replace('0', userId), {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             })
             .then(response => response.json())

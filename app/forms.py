@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired, Length
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=64)])
+    email = StringField('Email', validators=[DataRequired(), Length(max=120)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     submit = SubmitField('Register')
 
@@ -29,6 +30,17 @@ class IdeaForm(FlaskForm):
 class SearchForm(FlaskForm):
     tags = StringField('Filter by Tags')
     submit = SubmitField('Search')
+
+
+class RequestPasswordResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Length(max=120)])
+    submit = SubmitField('Request Password Reset')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm New Password', validators=[DataRequired(), Length(min=6)])
+    submit = SubmitField('Reset Password')
 
 
 

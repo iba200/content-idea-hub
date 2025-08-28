@@ -67,6 +67,28 @@ python run.py
 
 ---
 
+## Configuration d'environnement
+
+Créez un fichier `.env` à la racine avec les variables suivantes (exemple) :
+
+```
+SECRET_KEY=change_me_in_production
+WTF_CSRF_SECRET_KEY=change_me_in_production
+DATABASE_URL=sqlite:///site.db
+SESSION_HOURS=2
+SESSION_COOKIE_SECURE=False
+SESSION_COOKIE_SAMESITE=Lax
+MAX_CONTENT_LENGTH=2097152
+RATELIMIT_DEFAULT=200 per hour
+RATELIMIT_STORAGE_URI=memory://
+FORCE_HTTPS=False
+GENAI_API_KEY=
+```
+
+Ensuite, relancez l’application pour prendre en compte la configuration.
+
+---
+
 ## Structure du projet
 
 ```

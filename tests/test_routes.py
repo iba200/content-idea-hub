@@ -1,6 +1,6 @@
 import pytest
 from app import create_app, db
-from app.models import User
+from app.models import User, Idea
 
 @pytest.fixture
 def client():
@@ -29,7 +29,7 @@ def test_login(client):
     response = client.post('/login', data={'username': 'testuser', 'password': 'testpass'})
     assert response.status_code == 302  # Redirect to indeximport pytest
 from app import create_app, db
-from app.models import User
+from app.models import User, Idea
 
 @pytest.fixture
 def client():

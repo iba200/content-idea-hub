@@ -71,10 +71,17 @@
                     </select>
                     <input type="text" name="search" value="{{ search }}" placeholder="Search ideas..." 
                            class="px-3 py-2 wireframe-border text-sm">
+                    <select name="sort" class="px-3 py-2 wireframe-border text-sm">
+                        <option value="created_desc">Created ↓</option>
+                        <option value="created_asc">Created ↑</option>
+                        <option value="title_asc">Title A-Z</option>
+                        <option value="title_desc">Title Z-A</option>
+                    </select>
                     <button type="submit" class="px-4 py-2 bg-wireframe-800 text-white text-sm font-medium hover:bg-wireframe-700">
                         SEARCH
                     </button>
                 </form>
+                <a href="{{ url_for('admin.export_ideas_admin', status=status_filter, search=search) }}" class="px-4 py-2 bg-wireframe-200 text-wireframe-800 text-sm font-medium hover:bg-wireframe-300 wireframe-border">EXPORT CSV</a>
             </div>
         </div>
     </div>

@@ -10,6 +10,7 @@
 </div>
 
 <form method="POST" class="space-y-8">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- General Settings -->
     <div class="wireframe-border bg-white rounded-lg">
         <div class="p-6 border-b border-wireframe-200">

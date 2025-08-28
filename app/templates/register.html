@@ -41,6 +41,28 @@
                     {% endif %}
                 </div>
 
+                <!-- Email Field -->
+                <div>
+                    <label class="block text-sm font-medium text-wire-text mb-2">
+                        {{ form.email.label.text }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        {{ form.email(class="w-full px-4 py-3 border-2 border-wire-border rounded-lg focus:outline-none focus:border-wire-accent transition-colors", 
+                            placeholder="Enter your email address") }}
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400 text-sm"></i>
+                        </div>
+                    </div>
+                    {% if form.email.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.email.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
                 <!-- Password Field -->
                 <div>
                     <label class="block text-sm font-medium text-wire-text mb-2">

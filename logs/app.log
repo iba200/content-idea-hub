@@ -1,0 +1,4 @@
+2025-08-28 15:37:34,835 INFO app: admin_toggle
+2025-08-28 15:52:26,974 INFO app: admin_delete_idea
+2025-08-28 16:20:43,097 ERROR app: Failed to send verification email: The message does not specify a sender and a default sender has not been configured
+2025-08-28 16:28:23,225 ERROR app: Failed to send verification email: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 5b1f17b1804b1-45b7a9404c4sm15358225e9.10 - gsmtp')
