@@ -126,4 +126,4 @@ MIT
 
 ## Auteur
 
-Développé par [Votre Nom ou Pseudo]
+Développé par Ibrahima thiongane
